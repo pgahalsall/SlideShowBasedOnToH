@@ -1,0 +1,12 @@
+<div *ngIf="slideshow">
+    <h2>{{ slideshow.title | uppercase }} Details</h2>
+    <div><span>id: </span>{{slideshow.id}}</div>
+    <div>
+      <label>title:
+        <input [(ngModel)]="slideshow.title" placeholder="name"/>
+      </label>
+    </div>
+    <button (click)="goBack()">go back</button>
+    <button (click)="save()">save</button>
+  </div>
+  

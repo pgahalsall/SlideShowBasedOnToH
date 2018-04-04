@@ -26,9 +26,13 @@ import { HeroSearchComponent }  from './hero-search/hero-search.component';
 // Slide
 import { SlidesComponent } from './slides/slides.component';
 import { SlideDetailComponent } from './slide-detail/slide-detail.component';
-import { SoundtrackComponent } from './soundtrack/soundtrack.component';
-import { SlideshowComponent } from './slideshow/slideshow.component';
+import { SoundtracksComponent } from './soundtracks/soundtracks.component';
+import { SoundtrackDetailComponent } from './soundtrack-detail/soundtrack-detail.component';
+import { SlideshowsComponent } from './slideshows/slideshows.component';
+import { SlideshowDetailComponent } from './slideshow-detail/slideshow-detail.component';
 import { SlideSearchComponent } from './slide-search/slide-search.component';
+import { SoundtrackService } from './services/soundtrack.service';
+import { SlideshowService } from './services/slideshow.service';
 
 @NgModule({
   imports: [
@@ -53,11 +57,13 @@ import { SlideSearchComponent } from './slide-search/slide-search.component';
     HeroSearchComponent,
     SlidesComponent,
     SlideDetailComponent,
-    SoundtrackComponent,
-    SlideshowComponent,
+    SoundtracksComponent,
+    SoundtrackDetailComponent,
+    SlideshowsComponent,
+    SlideshowDetailComponent,
     SlideSearchComponent
   ],
-  providers: [ HeroService, MessageService, SlideService ],
+  providers: [ HeroService, MessageService, SlideService, SoundtrackService, SlideshowService ],
   bootstrap: [ AppComponent ]
 })
 export class AppModule { }

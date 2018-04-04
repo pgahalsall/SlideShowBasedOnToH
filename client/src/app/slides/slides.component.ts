@@ -18,6 +18,9 @@ export class SlidesComponent implements OnInit {
 
   getSlides(): void {
     this.slideService.getSlides()
-      .subscribe(slides => this.slides = slides.slice(1, 5));
+      .subscribe(slides => 
+        {
+          this.slides = slides.slice(0, 5);
+        });
   }
 }

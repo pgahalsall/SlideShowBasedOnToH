@@ -25,7 +25,7 @@ export class SlideService {
   getSlides (): Observable<Slide[]> {
     return this.http.get<Slide[]>(this.slidesUrl)
       .pipe(
-        tap(slides => this.log(`fetched slides`)),
+        tap(slides => this.log(`fetched slides : ${slides.length}`)),
         catchError(this.handleError('getSlides', []))
       );
   }
@@ -46,12 +46,23 @@ export class SlideService {
 
   /** GET slide by id. Will 404 if id not found */
   getSlide(slideId: number): Observable<Slide> {
-    const url = `${this.slidesUrl}/${slideId}`;
-    return this.http.get<Slide>(url).pipe(
-      tap(_ => this.log(`fetched slide slideId=${slideId}`)),
+    const url = `${this.slidesUrl}/?slideId=${slideId}`;
+    return this.http.get<Slide>(url)
+    .pipe(
+      tap(_ => {
+        this.log(`fetched slide slideId=${slideId}`);
+      }),
       catchError(this.handleError<Slide>(`getSlide slideId=${slideId}`))
     );
   }
+
+  // getHero(id: number): Observable<Hero> {
+  //   const url = `${this.heroesUrl}/${id}`;
+  //   return this.http.get<Hero>(url).pipe(
+  //     tap(_ => this.log(`fetched hero id=${id}`)),
+  //     catchError(this.handleError<Hero>(`getHero id=${id}`))
+  //   );
+  // }
 
   /* GET slides whose name contains search term */
   searchSlides(term: string): Observable<Slide[]> {

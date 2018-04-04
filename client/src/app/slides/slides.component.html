@@ -1,11 +1,21 @@
-<h3>Top Slides</h3>
-<div class="grid grid-pad">
-  <a *ngFor="let slide of slides" class="col-1-4"
-      routerLink="/slide-detail/{{slide.slideId}}">
-    <div class="module slide">
-      <h4>{{slide.slideName}}</h4>
-    </div>
-  </a>
+<h2>My Slides</h2>
+
+<div>
+  <!-- <label>Hero name:
+    <input #heroName />
+  </label> -->
+  <!-- (click) passes input value to add() and then clears the input -->
+  <!-- <button (click)="add(heroName.value); heroName.value=''">
+    add
+  </button> -->
 </div>
 
-<app-slide-search></app-slide-search>
+<ul class="slides">
+  <li *ngFor="let slide of slides">
+    <a routerLink="/slidedetail/{{slide.slideId}}">
+      <span class="badge">{{slide.slideId}}</span> {{slide.slideName}}
+    </a>
+    <button class="delete" title="delete slide"
+    (click)="delete(slide)">x</button>
+  </li>
+</ul>

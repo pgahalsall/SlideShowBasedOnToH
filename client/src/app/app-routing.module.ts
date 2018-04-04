@@ -7,9 +7,10 @@ import { HeroDetailComponent }  from './hero-detail/hero-detail.component';
 
 import { SlidesComponent }   from './slides/slides.component';
 import { SlideDetailComponent }   from './slide-detail/slide-detail.component';
-import { SoundtrackComponent }   from './soundtrack/soundtrack.component';
-import { SlideshowComponent }   from './slideshow/slideshow.component';
-
+import { SoundtracksComponent }   from './soundtracks/soundtracks.component';
+import { SoundtrackDetailComponent }   from './soundtrack-detail/soundtrack-detail.component';
+import { SlideshowsComponent }   from './slideshows/slideshows.component';
+import { SlideshowDetailComponent }   from './slideshow-detail/slideshow-detail.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
@@ -18,8 +19,10 @@ const routes: Routes = [
   { path: 'heroes', component: HeroesComponent },
   { path: 'slides', component: SlidesComponent },
   { path: 'slidedetail/:slideId', component: SlideDetailComponent },
-  { path: 'soundtrack', component: SoundtrackComponent },
-  { path: 'slideshow', component: SlideshowComponent }
+  { path: 'soundtracks', component: SoundtracksComponent },
+  { path: 'soundtrackdetail/:id', component: SoundtrackDetailComponent },
+  { path: 'slideshows', component: SlideshowsComponent },
+  { path: 'slideshowdetail/:id', component: SlideshowDetailComponent }
 ];
 
 @NgModule({
