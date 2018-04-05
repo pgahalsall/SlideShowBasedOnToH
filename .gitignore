@@ -1,4 +1,9 @@
-typings/
-node_modules/
-src/*.js
-src/*.js.map
+client/typings/
+client/node_modules/
+client/src/*.js
+client/src/*.js.map
+client/src/assets/images/*.jpg
+client/src/assets/images/*.jpeg
+client/src/assets/images/*.png
+client/src/assets/music/*.mp3
+client/src/assets/music/*.wav

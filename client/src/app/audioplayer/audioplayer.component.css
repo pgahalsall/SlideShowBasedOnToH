@@ -1,0 +1,93 @@
+@import url(https://fonts.googleapis.com/css?family=Raleway:100);
+@import url(http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css);
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+body {
+  margin: 0;
+  background-color: #40424c;
+  font-family: 'Raleway', sans-serif;
+  text-align: center;
+}
+.container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -webkit-transform: translate(-50%, -50%);
+          transform: translate(-50%, -50%);
+  width: 100%;
+}
+p.track {
+  text-transform: uppercase;
+  color: #FFF;
+}
+p.track span {
+  color: #999;
+}
+button {
+  background-color: rgba(255, 255, 255, 0);
+  border: 1px solid #FFF;
+  border-radius: 50%;
+  color: #FFF;
+  text-align: center;
+  display: inline-block;
+  vertical-align: middle;
+  -webkit-transition: all 0.2s ease 0;
+  transition: all 0.2s ease 0;
+}
+button[data-am-button^="large"] {
+  width: 60px;
+  height: 60px;
+  margin: 0 5px;
+}
+button[data-am-button^="large"] i {
+  font-size: 25px;
+}
+button[data-am-button^="small"] {
+  width: 40px;
+  height: 40px;
+}
+button[data-am-button^="small"] i {
+  font-size: 14px;
+}
+button:hover {
+  color: #999;
+  border-color: #999;
+}
+button:focus {
+  outline: none;
+}
+#progress-bar {
+  width: 100%;
+  background-color: #000;
+  height: 5px;
+  position: relative;
+  margin: 1em 0;
+}
+#progress-bar #progress {
+  background-color: #999;
+  height: 5px;
+  position: absolute;
+  left: 0;
+  -webkit-transition: width 2.5s linear 0;
+  transition: width 2.5s linear 0;
+}
+footer {
+  position: fixed;
+  width: 100%;
+  bottom: 15px;
+  text-align: center;
+  color: #999;
+  font-size: 12px;
+}
+footer a {
+  color: inherit;
+  text-decoration: none;
+}
+footer a:hover {
+  color: #FFF;
+}

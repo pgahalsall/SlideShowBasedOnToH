@@ -2,7 +2,7 @@ export class Slide {
     slideId: number;
     slideName: string;
     slideCode: string;
-    takenDate: string;
+    takenDate: number;
     caption: string;
     slideHieght: string;
     slideWidth: string;

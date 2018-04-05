@@ -5,6 +5,21 @@
   <a routerLink="/slides">Slides</a>
   <a routerLink="/soundtracks">Soundtracks</a>
   <a routerLink="/slideshows">Slideshows</a>
+  <a routerLink="/audioplayer/11">AudioPlayer</a>
 </nav>
-<router-outlet></router-outlet>
-<app-messages></app-messages>
+
+<table>
+  <tr>
+    <td>
+        <router-outlet></router-outlet>
+    </td>
+  </tr>
+  <tr>
+      <td>
+          <app-messages></app-messages>
+      </td>
+    </tr>
+</table>
+
+
+

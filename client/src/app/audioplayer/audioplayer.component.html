@@ -1,0 +1,29 @@
+    <h2>My Audio Player</h2>
+
+    <div>
+        <div><span>playing: </span>{{filename}}</div>
+
+        <audio id="audioPlayer" preload="auto"><source src="./assets/music/TideIsHigh.mp3"/>Your browser does not support the audio element.</audio>
+
+        <div id="audioPlayerControls" class="container">
+          <p class="track"><span>PG Memories Radio Edit</span></p>
+          <button (click)="muteAudio()" data-am-button="small" id="btn-mute">
+              <i id="btn-mute-i" class="fa fa-volume-off"></i>
+          </button>
+          <button (click)="playPauseAudio()" data-am-button="large" id="btn-play-pause">
+              <i id="btn-play-i" class="fa fa-play"></i>
+          </button>
+          <button (click)="stopAudio()" data-am-button="small" id="btn-stop">
+              <i id="btn-stop-i" class="fa fa-stop"></i>
+          </button>	
+          <div id="progress-bar"><span id="progress"></span></div>	
+        </div>	
+        
+        <footer>
+            The track "{{song}}" by the artist "{{musician}}"
+        </footer>
+
+    </div>
+
+   
+ 
