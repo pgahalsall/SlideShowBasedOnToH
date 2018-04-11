@@ -11,7 +11,8 @@ import { SoundtracksComponent }   from './soundtracks/soundtracks.component';
 import { SoundtrackDetailComponent }   from './soundtrack-detail/soundtrack-detail.component';
 import { SlideshowsComponent }   from './slideshows/slideshows.component';
 import { SlideshowDetailComponent }   from './slideshow-detail/slideshow-detail.component';
-import { AudioplayerComponent }   from './audioplayer/audioplayer.component';
+import { AudioPlayerComponent }   from './audioplayer/audioplayer.component';
+import { SlideshowPlayerComponent }   from './slideshowplayer/slideshowplayer.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
@@ -24,7 +25,8 @@ const routes: Routes = [
   { path: 'soundtrackdetail/:id', component: SoundtrackDetailComponent },
   { path: 'slideshows', component: SlideshowsComponent },
   { path: 'slideshowdetail/:id', component: SlideshowDetailComponent },
-  { path: 'audioplayer/:id', component: AudioplayerComponent },
+  { path: 'audioplayer/:id', component: AudioPlayerComponent },
+  { path: 'slideshowplayer/:id', component: SlideshowPlayerComponent },
 ];
 
 @NgModule({

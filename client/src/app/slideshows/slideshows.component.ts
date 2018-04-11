@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { Slideshow } from '../models/slideshow';
 import { SlideshowService } from '../services/slideshow.service';
 
@@ -10,10 +11,15 @@ import { SlideshowService } from '../services/slideshow.service';
 export class SlideshowsComponent implements OnInit {
   slideshows: Slideshow[] = [];
 
-  constructor(private slideshowService: SlideshowService) { }
+  constructor(
+    private slideshowService: SlideshowService,
+    private route: ActivatedRoute
+  ) { }
 
   ngOnInit() {
-    this.getSlideshows();
+    if( +this.route.snapshot.pathFromRoot.toString().includes('slideshows')) {
+      this.getSlideshows();
+    }
   }
 
   getSlideshows(): void {

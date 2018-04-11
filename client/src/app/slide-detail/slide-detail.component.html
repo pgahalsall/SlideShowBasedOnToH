@@ -1,11 +1,13 @@
-<div *ngIf="slide">
-  <h2>{{ slide.slideName | uppercase }} Details</h2>
-  <div><span>id: </span>{{slide.slideId}}</div>
-  <div>
-    <label>name:
-      <input [(ngModel)]="slide.slideName" placeholder="name"/>
-    </label>
-  </div>
+<div *ngIf="currentSlide">
+  <h2>{{ currentSlide.slideName | uppercase }} Details</h2>
+  <div><span>id: </span>{{currentSlide.slideId}}</div>
+</div>
+
+<div>
+  <img id="slideImage" src='' width=100 height=100 />
+</div>
+
+<div>
   <button (click)="goBack()">go back</button>
   <button (click)="save()">save</button>
 </div>

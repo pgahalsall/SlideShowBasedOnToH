@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { Soundtrack } from '../models/soundtrack';
 import { SoundtrackService } from '../services/soundtrack.service';
 
@@ -10,10 +11,15 @@ import { SoundtrackService } from '../services/soundtrack.service';
 export class SoundtracksComponent implements OnInit {
   soundtracks: Soundtrack[] = [];
 
-  constructor(private soundtrackService: SoundtrackService) { }
+  constructor(
+    private soundtrackService: SoundtrackService,
+    private route: ActivatedRoute
+  ) { }
 
   ngOnInit() {
-    this.getSoundtracks();
+    if( +this.route.snapshot.pathFromRoot.toString().includes('soundtracks')) {
+      this.getSoundtracks();
+    }
   }
 
   getSoundtracks(): void {

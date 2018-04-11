@@ -8,5 +8,6 @@ export class Soundtrack {
     filetype: SoundTypeEnum;
     release_date: number;
     updated_date: number;
+    duration: number;
 }
 

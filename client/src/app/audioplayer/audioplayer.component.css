@@ -13,12 +13,19 @@ body {
   font-family: 'Raleway', sans-serif;
   text-align: center;
 }
+.player {
+  position: absolute;
+  top: 80%;
+  
+  width: 100%;
+  text-align: center;
+}
 .container {
   position: absolute;
-  top: 50%;
+  top: 95%;
   left: 50%;
   -webkit-transform: translate(-50%, -50%);
-          transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%); 
   width: 100%;
 }
 p.track {
@@ -73,13 +80,11 @@ button:focus {
   height: 5px;
   position: absolute;
   left: 0;
-  -webkit-transition: width 2.5s linear 0;
-  transition: width 2.5s linear 0;
 }
 footer {
   position: fixed;
   width: 100%;
-  bottom: 15px;
+  bottom: 1px;
   text-align: center;
   color: #999;
   font-size: 12px;

@@ -3,7 +3,7 @@ export class Slideshow {
     title: string;
     producer: string;
     description: string;
-    slides: [ number ];
+    slides: number[];
     soundtrack: number;
     updated_date: number;
 }

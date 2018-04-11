@@ -1,0 +1,33 @@
+
+<div>
+     <!-- Show the current slide -->
+     <div>
+        <label class="label">{{selectedSlideshow.title}}</label>
+        <app-slide-detail 
+            [currentSlide]="selectedSlide">
+            (onSlideLoaded)="onSlideLoaded($event)"
+        </app-slide-detail>
+    </div>
+
+     
+    <label class="label">slideshow lengh: {{slideshowDuration}}</label>
+    <label class="label">slideshow contains {{selectedSlideshowLength}} slides</label>
+    <label class="label">Slide duration: {{slideDuration}}</label>
+    <label class="label">Current slide number: {{selectedSlide.slideId}}</label>
+    
+
+    <!-- Show the current soundtrack player -->
+    <!-- <div>
+        <label>Selected Soundtrack detail: </label>
+        <app-soundtrack-detail [soundtrack]="selectedSoundtrack"></app-soundtrack-detail>
+    </div> -->
+    <div>
+        <!-- <label>Selected Audio Player: </label> -->
+        <app-audioplayer 
+            [ActiveSoundtrack]="selectedSoundtrack"
+            (onAudioStatusChanged)="onAudioStatusChanged($event)"
+            (onAudioDurationChanged)="onAudioDurationChanged($event)">
+        </app-audioplayer>
+    </div>
+
+</div>

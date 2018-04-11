@@ -20,7 +20,9 @@ export class SoundtrackDetailComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.getSoundtrack();
+    if( +this.route.snapshot.pathFromRoot.toString().includes('soundtrackdetail')) {
+        this.getSoundtrack();
+    }
   }
 
   getSoundtrack(): void {

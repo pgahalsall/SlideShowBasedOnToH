@@ -20,7 +20,9 @@ export class SlideshowDetailComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.getSlideshow();
+    if( +this.route.snapshot.pathFromRoot.toString().includes('slideshowdetail')) {
+            this.getSlideshow();
+      }
   }
 
   getSlideshow(): void {
@@ -30,7 +32,12 @@ export class SlideshowDetailComponent implements OnInit {
       .subscribe(ss => 
         {
           this.slideshow = ss;
+
         });
+  }
+
+  setImageSrc(): void {
+
   }
 
   goBack(): void {

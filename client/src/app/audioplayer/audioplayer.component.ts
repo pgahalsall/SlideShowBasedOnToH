@@ -1,10 +1,11 @@
-import { Component, OnInit, AfterViewChecked, Input } from '@angular/core';
+import { Component, OnInit, EventEmitter, AfterViewChecked, Input, Output } from '@angular/core';
 
 import { ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
 
 import { Soundtrack } from '../models/soundtrack';
 import { SoundtrackService }  from '../services/soundtrack.service';
+import { EventListener } from '@angular/core/src/debug/debug_node';
 
 
 @Component({
@@ -13,10 +14,21 @@ import { SoundtrackService }  from '../services/soundtrack.service';
   styleUrls: ['./audioplayer.component.css']
 })
 
-export class AudioplayerComponent implements OnInit, AfterViewChecked {
-  filename: string;
-  musician: string;
-  song: string;
+export class AudioPlayerComponent implements OnInit, AfterViewChecked {
+  private _activeSoundtrack : Soundtrack = new Soundtrack;
+
+  private _isPlaying : boolean = false;
+  @Output() onAudioStatusChanged = new EventEmitter<boolean>();
+  @Output() onAudioDurationChanged = new EventEmitter<number>();
+
+  // activeSoundTrack property
+  @Input() set ActiveSoundtrack(st: Soundtrack) {
+    this._activeSoundtrack = st;
+    this.setSoundtrackOnAudio();
+  }
+  get ActiveSoundtrack(): Soundtrack { 
+    return this._activeSoundtrack; 
+  }
 
   constructor(
     private route: ActivatedRoute,
@@ -29,51 +41,68 @@ export class AudioplayerComponent implements OnInit, AfterViewChecked {
   }
 
   ngAfterViewChecked() {
-    this.addEventListener();
   }
 
   getSoundtrack(): void {
+    if( +this.route.snapshot.pathFromRoot.toString().includes('audioplayer')) {
       const id = +this.route.snapshot.paramMap.get('id');
       //this.soundtrackService.getSoundtrack(id)
       this.soundtrackService.getSoundtrackNo404(id)
         .subscribe(st => 
           {
-            //let f = st.filename.concat('.', st.filetype.toString());
-            this.filename = st.filename.concat('.', 'mp3');
-            this.musician = st.musician;
-            this.song = st.song;
+            this.ActiveSoundtrack = st;
+           
+            this.setSoundtrackOnAudio();
           });
+    }
   }
 
   playPauseAudio(): void {
-      let audio: HTMLMediaElement = <HTMLMediaElement>document.getElementById("audioPlayer");
-      let playBtnItalic = document.getElementById("btn-play-i");
+    let audio: HTMLMediaElement = <HTMLMediaElement>document.getElementById("audioPlayer");
+    let playBtnItalic = document.getElementById("btn-play-i");
 
-      //Play/pause the track
-      if (audio.paused == false) {
-        audio.pause();
-        playBtnItalic.classList.remove('fa-pause');
-        playBtnItalic.classList.add('fa-play');
-      } else {
-        audio.play();
-        playBtnItalic.classList.remove('fa-play');
-        playBtnItalic.classList.add('fa-pause');
-      }
-}
+    //Play/pause the track
+    if (audio.paused == false) {
+      this.pauseAudio(audio, playBtnItalic);
+    } else {
+     this.playAudio(audio, playBtnItalic);
+    }
+  }
+
+  playAudio(audio: HTMLMediaElement, playBtnItalic: HTMLElement) : void {
+    this._isPlaying = true;
+    audio.play();
+    playBtnItalic.classList.remove('fa-play');
+    playBtnItalic.classList.add('fa-pause');
+    this.onAudioStatusChanged.emit(this._isPlaying);
+  }
+
+  pauseAudio(audio: HTMLMediaElement, playBtnItalic: HTMLElement) : void {
+    this._isPlaying = false;
+    audio.pause();
+    playBtnItalic.classList.remove('fa-pause');
+    playBtnItalic.classList.add('fa-play');
+    this.onAudioStatusChanged.emit(this._isPlaying);
+  }
 
   stopAudio(): void {
-        let audio: HTMLMediaElement = <HTMLMediaElement>document.getElementById("audioPlayer");
-        let stopBtnItalic = document.getElementById("btn-play-i");
+    let audio = this.getAudioElement();
+    this.removeEventListeners();
 
-        //Stop the track
-        audio.pause();
-        audio.currentTime = 0;
-        stopBtnItalic.classList.remove('fa-pause');
-        stopBtnItalic.classList.add('fa-play');
+    let stopBtnItalic = document.getElementById("btn-play-i");
+
+    //Stop the track
+    audio.pause();
+    audio.currentTime = 0;
+    stopBtnItalic.classList.remove('fa-pause');
+    stopBtnItalic.classList.add('fa-play');
+
+    this._isPlaying = false;
+    this.onAudioStatusChanged.emit(false);
   }
 
   muteAudio(): void {
-    let audio: HTMLMediaElement = <HTMLMediaElement>document.getElementById("audioPlayer");
+    let audio = this.getAudioElement();
     let muteBtnItalic = document.getElementById("btn-mute-i");
 
     if(audio.volume != 0) {
@@ -98,9 +127,53 @@ export class AudioplayerComponent implements OnInit, AfterViewChecked {
       progress.style.width = value + "%";
   }
 
-  addEventListener(): void {
-      let audio: HTMLMediaElement = <HTMLMediaElement>document.getElementById("audioPlayer");
-      audio.addEventListener("timeupdate", this.updateProgressAudio, false);
+  getAudioElement(): HTMLMediaElement {
+    let audio: HTMLMediaElement = <HTMLMediaElement>document.getElementById("audioPlayer");
+    return audio;
   }
 
+  setSoundtrackOnAudio(): void {
+    let audio = this.getAudioElement();
+    
+    if((this.ActiveSoundtrack != null) && (this.ActiveSoundtrack.filename)) {
+      audio.src = this.ActiveSoundtrack.filename + this.ActiveSoundtrack.filetype;
+      this.addEventListeners();
+    }
+  }
+
+  private metaDataFunc() { };
+
+  addEventListeners()
+  {
+    this.addEventListener("timeupdate", this.updateProgressAudio);
+
+    let audio: HTMLMediaElement = <HTMLMediaElement>document.getElementById("audioPlayer");
+    let childAudio = this;
+    // this.addEventListener("loadedmetadata", function() 
+    // { 
+    //    childAudio.onAudioDurationChanged.emit(audio.duration);
+    // });
+
+    function audioUpdated() {
+      childAudio.onAudioDurationChanged.emit(audio.duration);
+    }
+    this.metaDataFunc = audioUpdated;
+    this.addEventListener("loadedmetadata", this.metaDataFunc);
+
+  }
+
+  addEventListener(eventName : string, eventFunc: () => void): void {
+    let audio = this.getAudioElement();
+    audio.addEventListener(eventName, eventFunc, false);
+  }
+
+  removeEventListeners() : void {
+    this.removeEventListener("timeupdate", this.updateProgressAudio);
+     this.removeEventListener("loadedmetadata", this.metaDataFunc);
+  }
+
+  removeEventListener(eventName : string, eventFunc: () => void) : void {
+    let audio = this.getAudioElement();
+    audio.removeEventListener(eventName, eventFunc, false);
+  }
 }

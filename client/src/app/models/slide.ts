@@ -4,9 +4,9 @@ export class Slide {
     slideCode: string;
     takenDate: number;
     caption: string;
-    slideHieght: string;
-    slideWidth: string;
-    slideMargin : string;
+    slideHeight: number;
+    slideWidth: number;
+    slideMargin : number;
     imageUrl: string;
 }
 

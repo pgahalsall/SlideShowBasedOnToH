@@ -2,8 +2,10 @@ client/typings/
 client/node_modules/
 client/src/*.js
 client/src/*.js.map
+client/src/assets/images/
 client/src/assets/images/*.jpg
 client/src/assets/images/*.jpeg
 client/src/assets/images/*.png
+client/src/assets/music/
 client/src/assets/music/*.mp3
 client/src/assets/music/*.wav
