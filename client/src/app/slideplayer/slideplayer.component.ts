@@ -101,9 +101,13 @@ export class SlidePlayerComponent implements OnInit {
     currentVisible.hidden = true;
 
     // Set details for both
-    this.setImageDetails(currentVisible, this._stagedSlide.imageUrl, 1, 1);
-    this.setImageDetails(currentHidden, this._currentSlide.imageUrl, this._currentSlide.slideHeight, this._currentSlide.slideWidth);
-
+    if(this._stagedSlide != null) {
+      this.setImageDetails(currentVisible, this._stagedSlide.imageUrl, 1, 1);
+    }
+    if(this._currentSlide != null) {
+      this.setImageDetails(currentHidden, this._currentSlide.imageUrl, this._currentSlide.slideHeight, this._currentSlide.slideWidth);
+    }
+    
     // Toggle visibility
     currentHidden.hidden = false;
   }

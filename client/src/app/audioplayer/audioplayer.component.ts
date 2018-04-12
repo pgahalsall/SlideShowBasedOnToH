@@ -28,8 +28,10 @@ export class AudioPlayerComponent implements OnInit, AfterViewChecked {
 
   // selectedSoundtrackId property
   @Input() set selectedSoundtrackId(id: number) {
+    if(id) {
     this._selectedSoundtrackId = id;
     this.setSoundtrack(id);
+    }
   }
   get selectedSoundtrackId(): number { 
     return this._selectedSoundtrackId; 
