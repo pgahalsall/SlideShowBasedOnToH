@@ -14,7 +14,7 @@ export const SLIDES: Slide[] = [
     },
     {
       "slideId": 2,
-      "slideName": "Liverpool",
+      "slideName": "Hut",
       "slideCode": "GDN-0011",
       "takenDate": Date.parse("March 19, 2016"),
       "caption": "A photo caption 2",
@@ -25,7 +25,7 @@ export const SLIDES: Slide[] = [
     },
     {
       "slideId": 3,
-      "slideName": "Family 2",
+      "slideName": "Lake",
       "slideCode": "GDN-0011",
       "takenDate": Date.parse("March 19, 2016"),
       "caption": "A photo caption 3",
@@ -36,7 +36,7 @@ export const SLIDES: Slide[] = [
     },
     {
       "slideId": 4,
-      "slideName": "Altogether",
+      "slideName": "Lobsta",
       "slideCode": "GDN-0011",
       "takenDate": Date.parse("March 19, 2016"),
       "caption": "A photo caption 4",
@@ -47,7 +47,7 @@ export const SLIDES: Slide[] = [
     },
     {
       "slideId": 5,
-      "slideName": "Speeches",
+      "slideName": "River",
       "slideCode": "GDN-0011",
       "takenDate": Date.parse("March 19, 2016"),
       "caption": "A photo caption 5",
@@ -58,7 +58,7 @@ export const SLIDES: Slide[] = [
     },
     {
       "slideId": 6,
-      "slideName": "Another",
+      "slideName": "Sign",
       "slideCode": "GDN-0011",
       "takenDate": Date.parse("March 19, 2016"),
       "caption": "A photo caption 6",

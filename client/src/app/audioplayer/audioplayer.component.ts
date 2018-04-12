@@ -15,19 +15,24 @@ import { EventListener } from '@angular/core/src/debug/debug_node';
 })
 
 export class AudioPlayerComponent implements OnInit, AfterViewChecked {
-  private _activeSoundtrack : Soundtrack = new Soundtrack;
-
+  private _selectedSoundtrackId : number;
+  private _selectedSoundtrack : Soundtrack = new Soundtrack();
   private _isPlaying : boolean = false;
-  @Output() onAudioStatusChanged = new EventEmitter<boolean>();
+  private _song : string = "";
+  private _musician : string = "";
+  //@Output() onAudioStatusChanged = new EventEmitter<boolean>();
   @Output() onAudioDurationChanged = new EventEmitter<number>();
+  @Output() onAudioPlay = new EventEmitter<boolean>();
+  @Output() onAudioPause = new EventEmitter<boolean>();
+  @Output() onAudioStop = new EventEmitter<boolean>();
 
-  // activeSoundTrack property
-  @Input() set ActiveSoundtrack(st: Soundtrack) {
-    this._activeSoundtrack = st;
-    this.setSoundtrackOnAudio();
+  // selectedSoundtrackId property
+  @Input() set selectedSoundtrackId(id: number) {
+    this._selectedSoundtrackId = id;
+    this.setSoundtrack(id);
   }
-  get ActiveSoundtrack(): Soundtrack { 
-    return this._activeSoundtrack; 
+  get selectedSoundtrackId(): number { 
+    return this._selectedSoundtrackId; 
   }
 
   constructor(
@@ -37,24 +42,24 @@ export class AudioPlayerComponent implements OnInit, AfterViewChecked {
   ) {}
   
   ngOnInit(): void {
-    this.getSoundtrack();
+    if( +this.route.snapshot.pathFromRoot.toString().includes('audioplayer')) {
+      const id = +this.route.snapshot.paramMap.get('id');
+      this.setSoundtrack(id);
+    }
   }
 
   ngAfterViewChecked() {
   }
 
-  getSoundtrack(): void {
-    if( +this.route.snapshot.pathFromRoot.toString().includes('audioplayer')) {
-      const id = +this.route.snapshot.paramMap.get('id');
-      //this.soundtrackService.getSoundtrack(id)
-      this.soundtrackService.getSoundtrackNo404(id)
-        .subscribe(st => 
-          {
-            this.ActiveSoundtrack = st;
-           
-            this.setSoundtrackOnAudio();
-          });
-    }
+  setSoundtrack(id: number) : void {
+    this.soundtrackService.getSoundtrackNo404(id)
+    .subscribe(st => 
+      {
+        this._selectedSoundtrack = st;
+        this._song = st.song;
+        this._musician = st.musician;
+        this.setAudioElementSource(st);
+      });
   }
 
   playPauseAudio(): void {
@@ -74,7 +79,7 @@ export class AudioPlayerComponent implements OnInit, AfterViewChecked {
     audio.play();
     playBtnItalic.classList.remove('fa-play');
     playBtnItalic.classList.add('fa-pause');
-    this.onAudioStatusChanged.emit(this._isPlaying);
+    this.onAudioPlay.emit(this._isPlaying);
   }
 
   pauseAudio(audio: HTMLMediaElement, playBtnItalic: HTMLElement) : void {
@@ -82,7 +87,7 @@ export class AudioPlayerComponent implements OnInit, AfterViewChecked {
     audio.pause();
     playBtnItalic.classList.remove('fa-pause');
     playBtnItalic.classList.add('fa-play');
-    this.onAudioStatusChanged.emit(this._isPlaying);
+    this.onAudioPause.emit(this._isPlaying);
   }
 
   stopAudio(): void {
@@ -98,7 +103,7 @@ export class AudioPlayerComponent implements OnInit, AfterViewChecked {
     stopBtnItalic.classList.add('fa-play');
 
     this._isPlaying = false;
-    this.onAudioStatusChanged.emit(false);
+    this.onAudioStop.emit(this._isPlaying);
   }
 
   muteAudio(): void {
@@ -132,11 +137,11 @@ export class AudioPlayerComponent implements OnInit, AfterViewChecked {
     return audio;
   }
 
-  setSoundtrackOnAudio(): void {
+  setAudioElementSource(st: Soundtrack): void {
     let audio = this.getAudioElement();
     
-    if((this.ActiveSoundtrack != null) && (this.ActiveSoundtrack.filename)) {
-      audio.src = this.ActiveSoundtrack.filename + this.ActiveSoundtrack.filetype;
+    if((st != null) && (st.filename)) {
+      audio.src = st.filename + st.filetype;
       this.addEventListeners();
     }
   }
@@ -149,17 +154,12 @@ export class AudioPlayerComponent implements OnInit, AfterViewChecked {
 
     let audio: HTMLMediaElement = <HTMLMediaElement>document.getElementById("audioPlayer");
     let childAudio = this;
-    // this.addEventListener("loadedmetadata", function() 
-    // { 
-    //    childAudio.onAudioDurationChanged.emit(audio.duration);
-    // });
-
+   
     function audioUpdated() {
       childAudio.onAudioDurationChanged.emit(audio.duration);
     }
     this.metaDataFunc = audioUpdated;
     this.addEventListener("loadedmetadata", this.metaDataFunc);
-
   }
 
   addEventListener(eventName : string, eventFunc: () => void): void {

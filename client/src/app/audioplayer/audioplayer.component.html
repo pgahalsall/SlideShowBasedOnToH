@@ -5,8 +5,6 @@
         <audio id="audioPlayer" preload="auto"><source src=""/>Your browser does not support the audio element.</audio>
 
         <div class="player">
-            
-            
         
             <p class="track"><span>PG Memories Radio Edit</span></p>
             <button (click)="muteAudio()" data-am-button="small" id="btn-mute">
@@ -26,9 +24,8 @@
                 <span id="progress"></span>
             </div>	
             <div margin="0,0,10,0">
-                <footer class="footer">The track "{{_activeSoundtrack.song}}" by the artist "{{_activeSoundtrack.musician}}"</footer>
+                <footer class="footer">The track "{{_song}}" by the artist "{{_musician}}"</footer>
             </div>
-                
            
         </div>
         

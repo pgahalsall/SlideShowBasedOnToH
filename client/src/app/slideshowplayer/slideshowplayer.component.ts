@@ -5,6 +5,7 @@ import { Subscription } from "rxjs";
 import { TimerObservable } from "rxjs/observable/TimerObservable";
 
 import { AudioPlayerComponent }  from '../audioplayer/audioplayer.component';
+import { SlidePlayerComponent }  from '../slideplayer/slideplayer.component';
 
 import { Soundtrack } from '../models/soundtrack';
 import { SoundtrackService }  from '../services/soundtrack.service';
@@ -22,16 +23,23 @@ import { Slide } from '../models/slide';
 export class SlideshowPlayerComponent implements OnInit, OnDestroy, AfterViewChecked, AfterViewInit {
   selectedSlideshow: Slideshow = new Slideshow();
   selectedSlideshowLength : number;
-  selectedSoundtrack: Soundtrack = new Soundtrack();
-  selectedSlide: Slide = new Slide();
-  slideId : number;
+  selectedSoundtrackId : number;
+  //selectedSlideId : number;
+  preloadSlideId : number;
+  //slidePosition : number;
+  slideIndexer : number;
+  slideshowSlides : number[];
+  
   slideDuration : number;
   slideshowDuration : string;
-  private tick: number;
+  // private tick: number;
   private subscription: Subscription;
 
-  // @ViewChild(AudioPlayerComponent)
-  // private audioPlayerComponent: AudioPlayerComponent;
+  @ViewChild(AudioPlayerComponent)
+  private audioPlayerComponent: AudioPlayerComponent;
+
+  @ViewChild(SlidePlayerComponent)
+  private slidePlayerComponent: SlidePlayerComponent;
 
   constructor(
     private route: ActivatedRoute,
@@ -42,7 +50,7 @@ export class SlideshowPlayerComponent implements OnInit, OnDestroy, AfterViewChe
   ) {}
   
   ngOnInit(): void {
-    this.slideId = 0;
+    //this.slideId = 0;
     this.getSlideshow();
   }
 
@@ -63,20 +71,13 @@ export class SlideshowPlayerComponent implements OnInit, OnDestroy, AfterViewChe
           {
             this.selectedSlideshow = ss;
             this.selectedSlideshowLength = ss.slides.length;
-            let soundtrackId = ss.soundtrack;
+            // let soundtrackId = ss.soundtrack;
             
-            // Get soundtrack from it's id
-            this.soundtrackService.getSoundtrack(soundtrackId)
-            .subscribe(st => 
-              {
-                this.selectedSoundtrack = st;
-    
-                //this.setAudioDuration(this.selectedSoundtrack);
-
-                //this.setSlideDuration(this.selectedSlideshow, st.duration);
-
-                this.preloadNextSlide();
-              });
+            this.audioPlayerComponent.selectedSoundtrackId = ss.soundtrack;
+            //this.slidePlayerComponent.currentSlideId = ss.slides[0];
+            this.slideshowSlides = ss.slides;
+            this.slideIndexer = 0;
+            this.slidePlayerComponent.preloadSlideId = this.slideshowSlides[this.slideIndexer];
           });
 
   }
@@ -87,13 +88,13 @@ export class SlideshowPlayerComponent implements OnInit, OnDestroy, AfterViewChe
   }
 
   playSlideshow() : void {
-    this.slideId = 0;
+    //this.slideId = 0;
     this.setUpTimer();
   }
   
   stopSlideshow() : void {
-    this.slideId = 0;
-    this.tick = 0;
+    this.slideIndexer = 0;
+    //this.tick = 0;
 
     //this.slideTimer = null;
     this.stopTimer();
@@ -108,45 +109,56 @@ export class SlideshowPlayerComponent implements OnInit, OnDestroy, AfterViewChe
     let timer = TimerObservable.create(0, this.slideDuration);
     this.subscription = timer.subscribe(t => 
       {
-        this.tick = t;
+        //this.tick = t;
         this.slideIncrementer();
       });
 
   }
 
   slideIncrementer() : void {
-    let sh:Slideshow = this.selectedSlideshow;
-    let slideCount = sh.slides.length;
-    if(this.slideId < slideCount) {
-
-      // Start Preloading next slide
-      this.preloadNextSlide();
-
-      // Display the previous Preloaded slide
-
+    if(this.slideIndexer < this.slideshowSlides.length + 1) {
+      this.displayNextSlide();
     }
-    else
-    {
+    else {
       this.stopSlideshow();
     }
   }
 
-  preloadNextSlide() : void {
-    this.slideId++;
-    //this.slideService.getSlide(this.slideId)
-    this.slideService.getSlideNo404(this.slideId)
-    .subscribe(slide => 
-      {
-        this.selectedSlide = slide;
-      });
+  displayNextSlide() : void {
+    this.slideIndexer++;
+    let slideToPreload: number = this.slideshowSlides[this.slideIndexer]
+    
+    // Start Preloading next slide
+    this.slidePlayerComponent.preloadSlideId = slideToPreload;
+
+    // Display the previous Preloaded slide
+    this.slidePlayerComponent.displayStagedSlide();
   }
 
-  onAudioStatusChanged(isPlaying : boolean) : void {
+  // preloadNextSlide() : void {
+  //   this.slideId++;
+  //   //this.slideService.getSlide(this.slideId)
+  //   this.slideService.getSlideNo404(this.slideId)
+  //   .subscribe(slide => 
+  //     {
+  //       this.selectedSlide = slide;
+  //     });
+  // }
+
+  onAudioPlay(isPlaying : boolean) : void {
     if(isPlaying) {
       this.playSlideshow();
     }
-    else
-    {
+  }
+
+  onAudioPause(isPlaying : boolean) : void {
+    if(!isPlaying) {
+      this.stopSlideshow();
+    }
+  }
+
+  onAudioStop(isPlaying : boolean) : void {
+    if(!isPlaying) {
       this.stopSlideshow();
     }
   }
@@ -157,8 +169,11 @@ export class SlideshowPlayerComponent implements OnInit, OnDestroy, AfterViewChe
     this.setSlideDuration(duration)
   }
 
-  onSlideLoaded(slideNumber : number) : void {
-    
+  onSlidePreloaded(slideNumber : number) : void {
+    if(this.slideIndexer < 2)
+    {
+      this.displayNextSlide();
+    }
   }
 
   ngOnDestroy() {

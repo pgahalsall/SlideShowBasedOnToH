@@ -12,6 +12,7 @@ import { SoundtrackDetailComponent }   from './soundtrack-detail/soundtrack-deta
 import { SlideshowsComponent }   from './slideshows/slideshows.component';
 import { SlideshowDetailComponent }   from './slideshow-detail/slideshow-detail.component';
 import { AudioPlayerComponent }   from './audioplayer/audioplayer.component';
+import { SlidePlayerComponent }   from './slideplayer/slideplayer.component';
 import { SlideshowPlayerComponent }   from './slideshowplayer/slideshowplayer.component';
 
 const routes: Routes = [
@@ -26,6 +27,7 @@ const routes: Routes = [
   { path: 'slideshows', component: SlideshowsComponent },
   { path: 'slideshowdetail/:id', component: SlideshowDetailComponent },
   { path: 'audioplayer/:id', component: AudioPlayerComponent },
+  { path: 'slideplayer/:id', component: SlidePlayerComponent },
   { path: 'slideshowplayer/:id', component: SlideshowPlayerComponent },
 ];
 

@@ -1,0 +1,15 @@
+<div *ngIf="currentSlide">
+    <h2>{{ currentSlide.slideName | uppercase }} Details</h2>
+    <div><span>id: </span>{{currentSlide.slideId}}</div>
+  </div>
+  
+  <div>
+    <img id="slideImage1" src='' width=1 height=1 />
+    <img id="slideImage2" src='' width=1 height=1 hidden />
+  </div>
+  
+  <div>
+    <button (click)="goBack()">go back</button>
+    <button (click)="save()">save</button>
+  </div>
+  

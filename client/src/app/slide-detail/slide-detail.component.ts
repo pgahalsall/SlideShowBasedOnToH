@@ -11,7 +11,7 @@ import { SlideService }  from '../services/slide.service';
   styleUrls: [ './slide-detail.component.css' ]
 })
 export class SlideDetailComponent implements OnInit {
-  private PLACEHOLDER: string = "./assets/images/c-transparent.jpg";
+  private PLACEHOLDER: string = "./assets/images/prototype/c-transparent.jpg";
   private _currentSlide : Slide = new Slide();
   //@Input() slide: Slide;
   @Output() onSlideLoaded = new EventEmitter<number>();
@@ -31,16 +31,18 @@ export class SlideDetailComponent implements OnInit {
 
   ngOnInit(): void {
     if( +this.route.snapshot.pathFromRoot.toString().includes('slidedetail')) {
-      this.getSlide();
+      const slideId = +this.route.snapshot.paramMap.get('slideId');
+      this.getSlide(slideId);
     }
   }
 
-  getSlide(): void {
-    const slideId = +this.route.snapshot.paramMap.get('slideId');
-    this.slideService.getSlide(slideId)
+  getSlide(id: number): void {
+    
+    this.slideService.getSlide(id)
     //this.slideService.getSlideNo404(slideId)
       .subscribe(slide => 
         {
+          this.addEventListeners();
           this._currentSlide = slide[0];
           this.setImageDetails();
         });
@@ -53,6 +55,7 @@ export class SlideDetailComponent implements OnInit {
         imgSrc.src = this._currentSlide.imageUrl;
         // imgSrc.width = this._currentSlide.slideWidth;
         // imgSrc.height = this._currentSlide.slideHeight;
+        
       }
       else
       {
@@ -96,10 +99,11 @@ export class SlideDetailComponent implements OnInit {
     function imageLoaded() {
       //sd.setImageDetails();
       sd.onSlideLoaded.emit(sd._currentSlide.slideId);
+      sd.removeEventListeners();
     }
 
     this.metaDataFunc = imageLoaded;
-    this.addEventListener("onload", this.metaDataFunc);
+    this.addEventListener("load", this.metaDataFunc);
 
   }
 
@@ -109,7 +113,7 @@ export class SlideDetailComponent implements OnInit {
   }
 
   removeEventListeners() : void {
-    this.removeEventListener("onload", this.metaDataFunc);
+    this.removeEventListener("load", this.metaDataFunc);
   }
 
   removeEventListener(eventName : string, eventFunc: () => void) : void {

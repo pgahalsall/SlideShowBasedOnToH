@@ -3,17 +3,16 @@
      <!-- Show the current slide -->
      <div>
         <label class="label">{{selectedSlideshow.title}}</label>
-        <app-slide-detail 
-            [currentSlide]="selectedSlide">
-            (onSlideLoaded)="onSlideLoaded($event)"
-        </app-slide-detail>
+        <app-slideplayer 
+            (onSlidePreloaded)="onSlidePreloaded($event)">
+        </app-slideplayer>
     </div>
 
      
     <label class="label">slideshow lengh: {{slideshowDuration}}</label>
     <label class="label">slideshow contains {{selectedSlideshowLength}} slides</label>
     <label class="label">Slide duration: {{slideDuration}}</label>
-    <label class="label">Current slide number: {{selectedSlide.slideId}}</label>
+    <label class="label">Preload slide number: {{preloadSlideId}}</label>
     
 
     <!-- Show the current soundtrack player -->
@@ -24,8 +23,10 @@
     <div>
         <!-- <label>Selected Audio Player: </label> -->
         <app-audioplayer 
-            [ActiveSoundtrack]="selectedSoundtrack"
-            (onAudioStatusChanged)="onAudioStatusChanged($event)"
+            [selectedSoundtrackId]="selectedSoundtrackId"
+            (onAudioPlay)="onAudioPlay($event)"
+            (onAudioPause)="onAudioPause($event)"
+            (onAudioStop)="onAudioStop($event)"
             (onAudioDurationChanged)="onAudioDurationChanged($event)">
         </app-audioplayer>
     </div>
