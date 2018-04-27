@@ -24,15 +24,12 @@ export class SlideshowPlayerComponent implements OnInit, OnDestroy, AfterViewChe
   selectedSlideshow: Slideshow = new Slideshow();
   selectedSlideshowLength : number;
   selectedSoundtrackId : number;
-  //selectedSlideId : number;
   preloadSlideId : number;
-  //slidePosition : number;
   slideIndexer : number;
   slideshowSlides : number[];
   
   slideDuration : number;
   slideshowDuration : string;
-  // private tick: number;
   private subscription: Subscription;
 
   @ViewChild(AudioPlayerComponent)
@@ -50,7 +47,6 @@ export class SlideshowPlayerComponent implements OnInit, OnDestroy, AfterViewChe
   ) {}
   
   ngOnInit(): void {
-    //this.slideId = 0;
     this.getSlideshow();
   }
 
@@ -71,7 +67,6 @@ export class SlideshowPlayerComponent implements OnInit, OnDestroy, AfterViewChe
           {
             this.selectedSlideshow = ss;
             this.selectedSlideshowLength = ss.slides.length;
-            // let soundtrackId = ss.soundtrack;
             
             this.audioPlayerComponent.selectedSoundtrackId = ss.soundtrack;
             //this.slidePlayerComponent.currentSlideId = ss.slides[0];
@@ -88,15 +83,11 @@ export class SlideshowPlayerComponent implements OnInit, OnDestroy, AfterViewChe
   }
 
   playSlideshow() : void {
-    //this.slideId = 0;
     this.setUpTimer();
   }
   
   stopSlideshow() : void {
     this.slideIndexer = 0;
-    //this.tick = 0;
-
-    //this.slideTimer = null;
     this.stopTimer();
   }
 
@@ -125,25 +116,14 @@ export class SlideshowPlayerComponent implements OnInit, OnDestroy, AfterViewChe
   }
 
   displayNextSlide() : void {
-    this.slideIndexer++;
-    let slideToPreload: number = this.slideshowSlides[this.slideIndexer]
-    
-    // Start Preloading next slide
-    this.slidePlayerComponent.preloadSlideId = slideToPreload;
-
     // Display the previous Preloaded slide
     this.slidePlayerComponent.displayStagedSlide();
-  }
 
-  // preloadNextSlide() : void {
-  //   this.slideId++;
-  //   //this.slideService.getSlide(this.slideId)
-  //   this.slideService.getSlideNo404(this.slideId)
-  //   .subscribe(slide => 
-  //     {
-  //       this.selectedSlide = slide;
-  //     });
-  // }
+    // Start Preloading next slide and set hidden image source
+    this.slideIndexer++;
+    let slideToPreload: number = this.slideshowSlides[this.slideIndexer]
+    this.slidePlayerComponent.preloadSlideId = slideToPreload;
+  }
 
   onAudioPlay(isPlaying : boolean) : void {
     if(isPlaying) {
@@ -170,7 +150,7 @@ export class SlideshowPlayerComponent implements OnInit, OnDestroy, AfterViewChe
   }
 
   onSlidePreloaded(slideNumber : number) : void {
-    if(this.slideIndexer < 2)
+    if(this.slideIndexer < 1)
     {
       this.displayNextSlide();
     }

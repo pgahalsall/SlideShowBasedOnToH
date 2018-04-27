@@ -1,34 +1,61 @@
 
-<div>
-     <!-- Show the current slide -->
-     <div>
-        <label class="label">{{selectedSlideshow.title}}</label>
-        <app-slideplayer 
-            (onSlidePreloaded)="onSlidePreloaded($event)">
-        </app-slideplayer>
-    </div>
+ <label class="label">{{selectedSlideshow.title}}</label>
 
-     
-    <label class="label">slideshow lengh: {{slideshowDuration}}</label>
-    <label class="label">slideshow contains {{selectedSlideshowLength}} slides</label>
-    <label class="label">Slide duration: {{slideDuration}}</label>
-    <label class="label">Preload slide number: {{preloadSlideId}}</label>
+  <!-- Slide player -->
+  <table>
+      <tr>
+          <td>
+            <app-slideplayer
+                (onSlidePreloaded)="onSlidePreloaded($event)">
+            </app-slideplayer>
+          </td>
+      </tr>
+   
+      <tr>
+        <td>
+            <label class="label">slideshow lengh: {{slideshowDuration}}</label>
+            <label class="label">slideshow contains {{selectedSlideshowLength}} slides</label>
+        </td> 
+    </tr>
+    <tr>
+        <td>
+            <label class="label">Slide duration: {{slideDuration}}</label>
+            <label class="label">Preload slide number: {{preloadSlideId}}</label>
+        </td>
+    </tr>
+    <!-- Audio player -->
+    <tr>
+        <td>
+            <app-audioplayer 
+                [selectedSoundtrackId]="selectedSoundtrackId"
+                (onAudioPlay)="onAudioPlay($event)"
+                (onAudioPause)="onAudioPause($event)"
+                (onAudioStop)="onAudioStop($event)"
+                (onAudioDurationChanged)="onAudioDurationChanged($event)">
+            </app-audioplayer>
+        </td> 
+    </tr>   
+  </table>
+<!-- <div>
     
+    <app-slideplayer 
+        (onSlidePreloaded)="onSlidePreloaded($event)">
+    </app-slideplayer>
+</div> -->
+<!--      
+<label class="label">slideshow lengh: {{slideshowDuration}}</label>
+<label class="label">slideshow contains {{selectedSlideshowLength}} slides</label>
+<label class="label">Slide duration: {{slideDuration}}</label>
+<label class="label">Preload slide number: {{preloadSlideId}}</label> -->
 
-    <!-- Show the current soundtrack player -->
-    <!-- <div>
-        <label>Selected Soundtrack detail: </label>
-        <app-soundtrack-detail [soundtrack]="selectedSoundtrack"></app-soundtrack-detail>
-    </div> -->
-    <div>
-        <!-- <label>Selected Audio Player: </label> -->
-        <app-audioplayer 
-            [selectedSoundtrackId]="selectedSoundtrackId"
-            (onAudioPlay)="onAudioPlay($event)"
-            (onAudioPause)="onAudioPause($event)"
-            (onAudioStop)="onAudioStop($event)"
-            (onAudioDurationChanged)="onAudioDurationChanged($event)">
-        </app-audioplayer>
-    </div>
+<!-- Audio player -->
+<!-- <div>
+    <app-audioplayer 
+        [selectedSoundtrackId]="selectedSoundtrackId"
+        (onAudioPlay)="onAudioPlay($event)"
+        (onAudioPause)="onAudioPause($event)"
+        (onAudioStop)="onAudioStop($event)"
+        (onAudioDurationChanged)="onAudioDurationChanged($event)">
+    </app-audioplayer>
+</div> -->
 
-</div>

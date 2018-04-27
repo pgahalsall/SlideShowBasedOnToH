@@ -7,7 +7,7 @@
     "ng": "ng",
     "build": "ng build --prod",
     "start": "ng serve",
-    "startOpen": "ng serve --open",
+    "open": "ng serve --open",
     "test": "ng test",
     "lint": "tslint ./src/**/*.ts -t verbose",
     "e2e": "ng e2e"
@@ -29,7 +29,10 @@
     "@angular/router": "~5.0.0",
     "@angular/upgrade": "~5.0.0",
     "angular-in-memory-web-api": "~0.5.0",
+    "bootstrap": "^4.1.0",
     "core-js": "^2.4.1",
+    "jquery": "^3.3.1",
+    "popper.js": "^1.14.3",
     "rxjs": "^5.5.0",
     "zone.js": "^0.8.4"
   },

@@ -12,13 +12,44 @@ import { SlideService }  from '../services/slide.service';
 })
 export class SlidePlayerComponent implements OnInit {
   private PLACEHOLDER: string = "./assets/images/prototype/c-transparent.jpg";
+  private _displayHeight : number;
+  private _stagedSlideHeight : number;
+  private _stagedSlideWidth : number;
+
+  // Current
   private _currentSlide : Slide;
+  private get currentSlide() : Slide {
+    return this._currentSlide;
+  }
+  private set currentSlide(slide) {
+    this._currentSlide = slide;
+  }
+
+  // Staged
   private _stagedSlide : Slide;
+  private get stagedSlide() : Slide {
+    return this._stagedSlide;
+  }
+  private set stagedSlide(slide) {
+    this._stagedSlide = slide;
+    this._stagedSlideHeight = slide.slideHeight;
+    this._stagedSlideWidth = slide.slideWidth;
+  }
+
+  // PreLoaded
   private _preloadedSlide : Slide;
+  private get preloadedSlide() : Slide {
+    return this._preloadedSlide;
+  }
+  private set preloadedSlide(slide) {
+    this._preloadedSlide = slide;
+  }
+
 
   @Output() onSlidePreloaded = new EventEmitter<number>();
+  //@Output() onImageLoaded = new EventEmitter<object>();
 
-  // Current Slide
+  // Current Slide ID
   private _currentSlideId : number = 0;
   @Input() set currentSlideId(id: number) {
     this._currentSlideId = id;
@@ -26,7 +57,7 @@ export class SlidePlayerComponent implements OnInit {
   }
   get currentSlideId(): number { return this._currentSlideId; }
 
-  // PreLoad Slide
+  // PreLoad Slide ID
   private _preloadSlideId : number = 0;
   @Input() set preloadSlideId(id: number) {
     this._preloadSlideId = id;
@@ -41,6 +72,8 @@ export class SlidePlayerComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this._displayHeight = this.getDisplayHeight();
+
     if( +this.route.snapshot.pathFromRoot.toString().includes('slideplayer')) {
       const slideId = +this.route.snapshot.paramMap.get('slideId');
       this.preloadSlide(slideId);
@@ -54,69 +87,47 @@ export class SlidePlayerComponent implements OnInit {
         {
           let preloaded: Slide = slide[0];
           this.positionSlideOnLadder(preloaded);
+          this.setHiddenImageSource(preloaded.imageUrl);
           this.onSlidePreloaded.emit(preloaded.slideId)
         });
   }
 
-  isLadderPopulated()
-  {
-    return (this._currentSlide != null) && (this._stagedSlide != null) && (this._preloadedSlide != null)
-  }
-
   positionSlideOnLadder(newSlide: Slide) : void {
-    if(this.isLadderPopulated() == true) {
-      this.promoteSlides(newSlide);
-    }
-    else {
-      this.positionSlideTopDown(newSlide)
-    }
-  }
-
-  promoteSlides(newSlide: Slide) : void {
-    this._currentSlide = this._stagedSlide;
-    this._stagedSlide = this._preloadedSlide;
-    this._preloadedSlide = newSlide;
-  }
-
-  positionSlideTopDown(newSlide: Slide) : void {
-    if(this._currentSlide == null) {
-      this._currentSlide = newSlide;
-    }
-    else if (this._stagedSlide == null) {
-      this._stagedSlide = newSlide;
+    if (this.stagedSlide == null) {
+      this.stagedSlide = newSlide;
     } else {
-      this._preloadedSlide = newSlide;
+      this.preloadedSlide = newSlide;
     }
   }
 
   displayStagedSlide(): void {
-    let img1 : HTMLImageElement = <HTMLImageElement>this.getImageElement("1");
-    let img2 : HTMLImageElement = <HTMLImageElement>this.getImageElement("2");
-
-    // let previouslyHidden : string = this.getHiddenImage();
-    let currentHidden : HTMLImageElement = (img1.hidden == true) ? img1 : img2;
-    let currentVisible : HTMLImageElement = (img1.hidden == false) ? img1 : img2;
+    let currentVisibleImg : HTMLImageElement = this.getImage(false);
+    let currentHiddenImg : HTMLImageElement = this.getImage(true);
 
     // Hide Both
-    currentVisible.hidden = true;
+    currentVisibleImg.hidden = true;
 
-    // Set details for both
-    if(this._stagedSlide != null) {
-      this.setImageDetails(currentVisible, this._stagedSlide.imageUrl, 1, 1);
-    }
-    if(this._currentSlide != null) {
-      this.setImageDetails(currentHidden, this._currentSlide.imageUrl, this._currentSlide.slideHeight, this._currentSlide.slideWidth);
-    }
+    // Shrink images
+    currentVisibleImg.height = currentVisibleImg.width = 1;
+    currentHiddenImg.height = currentHiddenImg.width = 1;
     
-    // Toggle visibility
-    currentHidden.hidden = false;
+    // Scale image
+    let scaling = this._displayHeight / this._stagedSlideHeight;
+    let scaledHeight = this._displayHeight;
+    let scaledWidth = this._stagedSlideWidth * scaling;
+    currentHiddenImg.height = scaledHeight;
+    currentHiddenImg.width = scaledWidth;
+
+    // Display previously staged image
+    currentHiddenImg.hidden = false;
   }
 
-  setImageDetails(image: HTMLImageElement, url: string, height: number, width: number) : void
+  setHiddenImageSource(url: string) : void
   {
-    image.height = height;
-    image.width = width;
-    image.src = url;
+    let hiddenImage: HTMLImageElement = this.getImage(true);
+    hiddenImage.src = url;
+   
+    this.addEventListeners();
   }
 
   getImageElement(imageNumber : string): HTMLImageElement {
@@ -124,13 +135,57 @@ export class SlidePlayerComponent implements OnInit {
     return image;
   }
 
-  goBack(): void {
-    this.location.back();
+  getDisplayHeight() : number {
+    // var height = window.innerHeight
+    // || document.documentElement.clientHeight
+    // || document.body.clientHeight;
+    //var height = document.body.clientHeight;
+
+    // let div: HTMLImageElement = <HTMLImageElement>document.getElementById("containerTable");
+    // let height = div.clientHeight;
+    //var height = document.documentElement.clientHeight;
+
+    return 450;
   }
 
- save(): void {
-    this.slideService.updateSlide(this._currentSlide)
-      .subscribe(() => this.goBack());
+
+  getImage(isHidden: boolean) : HTMLImageElement {
+    let img1 : HTMLImageElement = <HTMLImageElement>this.getImageElement("1");
+    let img2 : HTMLImageElement = <HTMLImageElement>this.getImageElement("2");
+
+    let img : HTMLImageElement = (img1.hidden == isHidden) ? img1 : img2;
+    return img;
+  }
+
+  private metaDataFunc() { };
+
+  addEventListeners()
+  {
+    let sp = this;
+   
+    // Cache staged image sizes ready for when the staged image needs to be displayed
+    function imageLoaded() {
+      let currentHiddenImg : HTMLImageElement = sp.getImage(true);
+      sp._stagedSlideHeight = currentHiddenImg.naturalHeight;
+      sp._stagedSlideWidth = currentHiddenImg.naturalWidth; 
+      sp.removeEventListeners();
+    }
+    this.metaDataFunc = imageLoaded;
+    this.addEventListener("load", this.metaDataFunc);
+  }
+
+  addEventListener(eventName : string, eventFunc: () => void): void {
+    let image = this.getImage(true);
+    image.addEventListener(eventName, eventFunc, false);
+  }
+
+  removeEventListeners() : void {
+     this.removeEventListener("load", this.metaDataFunc);
+  }
+
+  removeEventListener(eventName : string, eventFunc: () => void) : void {
+    let image = this.getImage(true);
+    image.removeEventListener(eventName, eventFunc, false);
   }
 
 }
