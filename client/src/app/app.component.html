@@ -1,27 +1,36 @@
-<h1>{{title}}</h1>
-<nav>
-  <a routerLink="/dashboard">Dashboard</a>
-  <a routerLink="/heroes">Heroes</a>
-  <a routerLink="/slides">Slides</a>
-  <a routerLink="/soundtracks">Soundtracks</a>
-  <a routerLink="/slideshows">Slideshows</a>
-  <a routerLink="/slideplayer/11">SlidePlayer</a>
-  <a routerLink="/audioplayer/11">AudioPlayer</a>
-  <a routerLink="/slideshowplayer/12">SlideshowPlayer</a>
-</nav>
 
-<table>
-  <tr>
-    <td>
-        <router-outlet></router-outlet>
-    </td>
-  </tr>
-  <!-- <tr>
-    <td>
-        <app-messages></app-messages>
-    </td>
-  </tr> -->
-</table>
+<script>
+    $('#navId a').click(e => {
+      e.preventDefault();
+      $(this).tab('show');
+    });
+  </script>
 
+  <div class="text-center"> 
+    <h1>{{title}}</h1>
+  </div>
 
+  <div class="p-3">
+    <nav>
+        <a routerLink="/dashboard">Dashboard</a>
+        <a routerLink="/heroes">Heroes</a>
+        <a routerLink="/slides">Slides</a>
+        <a routerLink="/soundtracks">Soundtracks</a>
+        <a routerLink="/slideshows">Slideshows</a>
+        <a routerLink="/slideplayer/1">SlidePlayer</a>
+        <a routerLink="/audioplayer/1">AudioPlayer</a>
+        <a routerLink="/slideshowplayer/2">SlideshowPlayer</a>
+        <a routerLink="/gallery">Gallery</a>
+        <a routerLink="/login">Login</a>
+        <a routerLink="/musicpicker">Music Picker</a>
+    </nav>
+  </div> 
+
+  <div class="row">
+    <div class="col-1"></div>
+        <div class="col-10 text-center">
+            <router-outlet></router-outlet>
+        </div>
+    <div class="col-1"></div>
+  </div>
 

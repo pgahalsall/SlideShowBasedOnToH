@@ -37,6 +37,9 @@ import { SlideshowService } from './services/slideshow.service';
 import { AudioPlayerComponent } from './audioplayer/audioplayer.component';
 import { SlideshowPlayerComponent } from './slideshowplayer/slideshowplayer.component';
 import { SlidePlayerComponent } from './slideplayer/slideplayer.component';
+import { GalleryComponent } from './gallery/gallery.component';
+import { LoginComponent } from './login/login.component';
+import { MusicPickerComponent } from './musicpicker/musicpicker.component';
 
 @NgModule({
   imports: [
@@ -68,7 +71,10 @@ import { SlidePlayerComponent } from './slideplayer/slideplayer.component';
     SlideSearchComponent,
     AudioPlayerComponent,
     SlideshowPlayerComponent,
-    SlidePlayerComponent
+    SlidePlayerComponent,
+    GalleryComponent,
+    LoginComponent,
+    MusicPickerComponent
   ],
   providers: [ HeroService, MessageService, SlideService, SoundtrackService, SlideshowService ],
   bootstrap: [ AppComponent ]

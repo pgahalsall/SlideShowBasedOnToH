@@ -9,5 +9,6 @@ export class Soundtrack {
     release_date: number;
     updated_date: number;
     duration: number;
+    albumcover: string;
 }
 

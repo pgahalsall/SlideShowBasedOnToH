@@ -103,7 +103,6 @@ export class SlideshowPlayerComponent implements OnInit, OnDestroy, AfterViewChe
         //this.tick = t;
         this.slideIncrementer();
       });
-
   }
 
   slideIncrementer() : void {
@@ -121,6 +120,10 @@ export class SlideshowPlayerComponent implements OnInit, OnDestroy, AfterViewChe
 
     // Start Preloading next slide and set hidden image source
     this.slideIndexer++;
+    this.preloadSlide();
+  }
+
+  preloadSlide() : void {
     let slideToPreload: number = this.slideshowSlides[this.slideIndexer]
     this.slidePlayerComponent.preloadSlideId = slideToPreload;
   }
@@ -147,6 +150,15 @@ export class SlideshowPlayerComponent implements OnInit, OnDestroy, AfterViewChe
     let full : number = duration / 60;
     this.slideshowDuration = full.toFixed(2);
     this.setSlideDuration(duration)
+  }
+
+  onAudioElapsedChanged(fractionalPosition : number) : void {
+    // Calculate slide index based on fractionalPosition
+    let slideCount: number = this.slideshowSlides.length;
+    let newSlideIndex = Number((slideCount * fractionalPosition).toFixed(0));
+    this.slideIndexer = newSlideIndex;
+
+    this.preloadSlide();
   }
 
   onSlidePreloaded(slideNumber : number) : void {

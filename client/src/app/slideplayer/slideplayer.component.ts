@@ -32,8 +32,8 @@ export class SlidePlayerComponent implements OnInit {
   }
   private set stagedSlide(slide) {
     this._stagedSlide = slide;
-    this._stagedSlideHeight = slide.slideHeight;
-    this._stagedSlideWidth = slide.slideWidth;
+    // this._stagedSlideHeight = slide.slideHeight;
+    // this._stagedSlideWidth = slide.slideWidth;
   }
 
   // PreLoaded
@@ -72,7 +72,7 @@ export class SlidePlayerComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this._displayHeight = this.getDisplayHeight();
+    this.calcDisplayHeight();
 
     if( +this.route.snapshot.pathFromRoot.toString().includes('slideplayer')) {
       const slideId = +this.route.snapshot.paramMap.get('slideId');
@@ -112,11 +112,7 @@ export class SlidePlayerComponent implements OnInit {
     currentHiddenImg.height = currentHiddenImg.width = 1;
     
     // Scale image
-    let scaling = this._displayHeight / this._stagedSlideHeight;
-    let scaledHeight = this._displayHeight;
-    let scaledWidth = this._stagedSlideWidth * scaling;
-    currentHiddenImg.height = scaledHeight;
-    currentHiddenImg.width = scaledWidth;
+    this.scaleImage(currentHiddenImg);
 
     // Display previously staged image
     currentHiddenImg.hidden = false;
@@ -135,19 +131,10 @@ export class SlidePlayerComponent implements OnInit {
     return image;
   }
 
-  getDisplayHeight() : number {
-    // var height = window.innerHeight
-    // || document.documentElement.clientHeight
-    // || document.body.clientHeight;
-    //var height = document.body.clientHeight;
-
-    // let div: HTMLImageElement = <HTMLImageElement>document.getElementById("containerTable");
-    // let height = div.clientHeight;
-    //var height = document.documentElement.clientHeight;
-
-    return 450;
+  calcDisplayHeight() {
+    var height = document.documentElement.clientHeight;
+    this._displayHeight = height * 0.6;
   }
-
 
   getImage(isHidden: boolean) : HTMLImageElement {
     let img1 : HTMLImageElement = <HTMLImageElement>this.getImageElement("1");
@@ -155,6 +142,17 @@ export class SlidePlayerComponent implements OnInit {
 
     let img : HTMLImageElement = (img1.hidden == isHidden) ? img1 : img2;
     return img;
+  }
+
+  scaleImage(image: HTMLImageElement) : void {
+      this.calcDisplayHeight();
+      this._stagedSlideHeight = image.naturalHeight;
+      this._stagedSlideWidth = image.naturalWidth; 
+      let scaling = this._displayHeight / this._stagedSlideHeight;
+      let scaledHeight = this._displayHeight;
+      let scaledWidth = this._stagedSlideWidth * scaling;
+      image.height = scaledHeight;
+      image.width = scaledWidth;
   }
 
   private metaDataFunc() { };
@@ -165,11 +163,13 @@ export class SlidePlayerComponent implements OnInit {
    
     // Cache staged image sizes ready for when the staged image needs to be displayed
     function imageLoaded() {
-      let currentHiddenImg : HTMLImageElement = sp.getImage(true);
-      sp._stagedSlideHeight = currentHiddenImg.naturalHeight;
-      sp._stagedSlideWidth = currentHiddenImg.naturalWidth; 
-      sp.removeEventListeners();
+        // Scale image
+        let currentHiddenImg : HTMLImageElement = sp.getImage(true);
+        sp.scaleImage(currentHiddenImg);
+
+        sp.removeEventListeners();
     }
+
     this.metaDataFunc = imageLoaded;
     this.addEventListener("load", this.metaDataFunc);
   }

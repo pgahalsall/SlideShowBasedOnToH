@@ -51,7 +51,7 @@ What needs adding for a full MEAN stack project :-
 2. Route Authorization
 3. Login passport/jwt
 4. Bootstrap and styling. *** Bootstrap has been added to angular-cli.json ***
-5. 
+5. Font-Awesome / Angular issue means css/fonts have been added to Assets folder. Sould just be referenced in node_modules
 
 
 

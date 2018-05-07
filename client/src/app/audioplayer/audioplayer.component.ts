@@ -7,6 +7,7 @@ import { Soundtrack } from '../models/soundtrack';
 import { SoundtrackService }  from '../services/soundtrack.service';
 import { EventListener } from '@angular/core/src/debug/debug_node';
 
+import * as $ from 'jquery/dist/jquery.min.js';
 
 @Component({
   selector: 'app-audioplayer',
@@ -20,8 +21,9 @@ export class AudioPlayerComponent implements OnInit, AfterViewChecked {
   private _isPlaying : boolean = false;
   private _song : string = "";
   private _musician : string = "";
-  //@Output() onAudioStatusChanged = new EventEmitter<boolean>();
+  @Output() onAudioElapsedChanged = new EventEmitter<number>();
   @Output() onAudioDurationChanged = new EventEmitter<number>();
+  @Output() onAudio = new EventEmitter<number>();
   @Output() onAudioPlay = new EventEmitter<boolean>();
   @Output() onAudioPause = new EventEmitter<boolean>();
   @Output() onAudioStop = new EventEmitter<boolean>();
@@ -129,6 +131,10 @@ export class AudioPlayerComponent implements OnInit, AfterViewChecked {
 
       var value = 0;
       if (audio.currentTime > 0) {
+        let audioElapsed: HTMLMediaElement = <HTMLMediaElement>document.getElementById("audioElapsed");
+        let cTimeMins: number = audio.currentTime / 60; 
+        audioElapsed.textContent = cTimeMins.toFixed(2);
+
         value = Math.floor((100 / audio.duration) * audio.currentTime);
       }
       progress.style.width = value + "%";
@@ -148,6 +154,20 @@ export class AudioPlayerComponent implements OnInit, AfterViewChecked {
     }
   }
 
+  /* Allows to change the current time of the song */ 
+  setCurrentTime(e: any) {
+    let audio = this.getAudioElement();
+    var elem = $('#progress-bar');  
+    var posX_left = elem.offset().left; 
+    var x = e.clientX - posX_left;
+    let ratio = x / elem.width();
+
+    let time: number = ratio * audio.duration;
+    audio.currentTime = time;
+
+    this.onAudioElapsedChanged.emit(audio.currentTime / audio.duration);
+  }
+
   private metaDataFunc() { };
 
   addEventListeners()
@@ -158,6 +178,8 @@ export class AudioPlayerComponent implements OnInit, AfterViewChecked {
     let childAudio = this;
    
     function audioUpdated() {
+      let audioDuration: HTMLMediaElement = <HTMLMediaElement>document.getElementById("audioDuration");
+      audioDuration.textContent = (audio.duration / 60).toFixed(2);
       childAudio.onAudioDurationChanged.emit(audio.duration);
     }
     this.metaDataFunc = audioUpdated;
