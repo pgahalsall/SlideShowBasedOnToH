@@ -4,7 +4,7 @@ export class Slideshow {
     producer: string;
     description: string;
     slides: number[];
-    soundtrack: number;
+    soundtracks: number[];
     updated_date: number;
 }
 

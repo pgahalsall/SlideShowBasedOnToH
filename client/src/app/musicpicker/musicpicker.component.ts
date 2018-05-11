@@ -22,8 +22,6 @@ export class MusicPickerComponent implements OnInit {
       this.musicCarousel = new Carousel($('.container '));
 
       this.init_events();
-
-
     }
 
     init_events() {

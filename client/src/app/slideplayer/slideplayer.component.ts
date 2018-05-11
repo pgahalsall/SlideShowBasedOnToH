@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input, Output, EventEmitter } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
 
@@ -12,9 +12,11 @@ import { SlideService }  from '../services/slide.service';
 })
 export class SlidePlayerComponent implements OnInit {
   private PLACEHOLDER: string = "./assets/images/prototype/c-transparent.jpg";
-  private _displayHeight : number;
-  private _stagedSlideHeight : number;
-  private _stagedSlideWidth : number;
+  private _displayHeight : number = 0;
+  private _stagedSlideNaturalHeight : number = 0;
+  private _stagedSlideNaturalWidth : number = 0;
+  private _stagedSlideScaledHeight : number = 0;
+  private _stagedSlideScaledWidth : number = 0;
 
   // Current
   private _currentSlide : Slide;
@@ -32,8 +34,8 @@ export class SlidePlayerComponent implements OnInit {
   }
   private set stagedSlide(slide) {
     this._stagedSlide = slide;
-    // this._stagedSlideHeight = slide.slideHeight;
-    // this._stagedSlideWidth = slide.slideWidth;
+    // this._stagedSlideNaturalHeight = slide.slideHeight;
+    // this._stagedSlideNaturalWidth = slide.slideWidth;
   }
 
   // PreLoaded
@@ -72,6 +74,7 @@ export class SlidePlayerComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.addEventListeners();
     this.calcDisplayHeight();
 
     if( +this.route.snapshot.pathFromRoot.toString().includes('slideplayer')) {
@@ -101,21 +104,32 @@ export class SlidePlayerComponent implements OnInit {
   }
 
   displayStagedSlide(): void {
-    let currentVisibleImg : HTMLImageElement = this.getImage(false);
-    let currentHiddenImg : HTMLImageElement = this.getImage(true);
+    let firstSlide: Boolean = this.isFirstSlide();
+    if(!firstSlide) {
+      let currentVisibleImg : HTMLImageElement = this.getImage(false);
+      let currentHiddenImg : HTMLImageElement = this.getImage(true);
 
-    // Hide Both
-    currentVisibleImg.hidden = true;
+      // Hide Both
+      currentVisibleImg.hidden = true;
 
-    // Shrink images
-    currentVisibleImg.height = currentVisibleImg.width = 1;
-    currentHiddenImg.height = currentHiddenImg.width = 1;
-    
-    // Scale image
-    this.scaleImage(currentHiddenImg);
+      // Shrink images
+      currentVisibleImg.height = currentVisibleImg.width = 1;
+      currentHiddenImg.height = currentHiddenImg.width = 1;
+      
+      // Scale image
+      //this.scaleStagedImage(currentHiddenImg);
+      //currentHiddenImg.height = this._stagedSlideScaledHeight;
+      //currentHiddenImg.width = this._stagedSlideScaledWidth;
+      this.setImageDimensions(currentHiddenImg, this._stagedSlideScaledHeight, this._stagedSlideScaledWidth);
 
-    // Display previously staged image
-    currentHiddenImg.hidden = false;
+      // Display previously staged image
+      currentHiddenImg.hidden = false;
+    }
+  }
+
+  setImageDimensions(image: HTMLImageElement, height: number, width: number) : void {
+    image.height = height;
+    image.width = width;
   }
 
   setHiddenImageSource(url: string) : void
@@ -133,7 +147,15 @@ export class SlidePlayerComponent implements OnInit {
 
   calcDisplayHeight() {
     var height = document.documentElement.clientHeight;
-    this._displayHeight = height * 0.6;
+    this._displayHeight = height * 0.7;
+  }
+
+  // Both images are initially hidden
+  isFirstSlide() : Boolean {
+    let img1 : HTMLImageElement = <HTMLImageElement>this.getImageElement("1");
+    let img2 : HTMLImageElement = <HTMLImageElement>this.getImageElement("2");
+
+    return !(img1.hidden || img2.hidden);
   }
 
   getImage(isHidden: boolean) : HTMLImageElement {
@@ -144,15 +166,21 @@ export class SlidePlayerComponent implements OnInit {
     return img;
   }
 
-  scaleImage(image: HTMLImageElement) : void {
-      this.calcDisplayHeight();
-      this._stagedSlideHeight = image.naturalHeight;
-      this._stagedSlideWidth = image.naturalWidth; 
-      let scaling = this._displayHeight / this._stagedSlideHeight;
-      let scaledHeight = this._displayHeight;
-      let scaledWidth = this._stagedSlideWidth * scaling;
-      image.height = scaledHeight;
-      image.width = scaledWidth;
+  // scaleStagedImage(image: HTMLImageElement) : void {
+  //     this.calcDisplayHeight();
+  //     this._stagedSlideNaturalHeight = image.naturalHeight;
+  //     this._stagedSlideNaturalWidth = image.naturalWidth; 
+  //     let scaling = this._displayHeight / this._stagedSlideNaturalHeight;
+  //     this._stagedSlideScaledHeight = this._displayHeight;
+  //     this._stagedSlideScaledWidth = this._stagedSlideNaturalWidth * scaling;
+  //     //image.height = scaledHeight;
+  //     //image.width = scaledWidth;
+  // }
+
+  isImageSourceValid(image: HTMLImageElement) : Boolean {
+      let src : string = (image == null) ? "" : image.src;
+      return ((src.lastIndexOf(".jpg") > 0) || (src.lastIndexOf(".png") > 0) 
+           || (src.lastIndexOf(".gif") > 0) || (src.lastIndexOf(".bmp") > 0))
   }
 
   private metaDataFunc() { };
@@ -164,10 +192,23 @@ export class SlidePlayerComponent implements OnInit {
     // Cache staged image sizes ready for when the staged image needs to be displayed
     function imageLoaded() {
         // Scale image
-        let currentHiddenImg : HTMLImageElement = sp.getImage(true);
-        sp.scaleImage(currentHiddenImg);
+        let image : HTMLImageElement = sp.getImage(true);
+        if(sp.isImageSourceValid(image)) {
+            sp._stagedSlideNaturalHeight = image.naturalHeight;
+            sp._stagedSlideNaturalWidth = image.naturalWidth; 
+            let scaling = sp._displayHeight / sp._stagedSlideNaturalHeight;
+            sp._stagedSlideScaledHeight = sp._displayHeight;
+            sp._stagedSlideScaledWidth = sp._stagedSlideNaturalWidth * scaling;
+
+            if(sp.isFirstSlide()) {
+              image.hidden = true;
+              sp.displayStagedSlide();
+            }
+            //sp.scaleStagedImage(currentHiddenImg);
+        }
 
         sp.removeEventListeners();
+        
     }
 
     this.metaDataFunc = imageLoaded;
@@ -184,8 +225,15 @@ export class SlidePlayerComponent implements OnInit {
   }
 
   removeEventListener(eventName : string, eventFunc: () => void) : void {
-    let image = this.getImage(true);
-    image.removeEventListener(eventName, eventFunc, false);
+    //let image = this.getImage(true);
+    let img1 : HTMLImageElement = <HTMLImageElement>this.getImageElement("1");
+    let img2 : HTMLImageElement = <HTMLImageElement>this.getImageElement("2");
+
+    img1.removeEventListener(eventName, eventFunc, false);
+    img2.removeEventListener(eventName, eventFunc, false);
   }
 
+  ngOnDestroy() {
+    this.removeEventListeners();
+  }
 }

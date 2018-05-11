@@ -1,8 +1,10 @@
 import { Component, OnInit, AfterViewInit, ViewChild, OnDestroy, AfterViewChecked, Input, ElementRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
-import { Subscription } from "rxjs";
+import { Subscription, Subject } from "rxjs";
+import { Observable } from "rxjs/observable";
 import { TimerObservable } from "rxjs/observable/TimerObservable";
+import { switchMap }  from "rxjs/operators/switchMap";
 
 import { AudioPlayerComponent }  from '../audioplayer/audioplayer.component';
 import { SlidePlayerComponent }  from '../slideplayer/slideplayer.component';
@@ -24,13 +26,16 @@ export class SlideshowPlayerComponent implements OnInit, OnDestroy, AfterViewChe
   selectedSlideshow: Slideshow = new Slideshow();
   selectedSlideshowLength : number;
   selectedSoundtrackId : number;
+  soundtrackIndexer : number;
+  slideshowSoundtracks : number[];
+
   preloadSlideId : number;
   slideIndexer : number;
   slideshowSlides : number[];
-  
+  isSlideJump : Boolean = false;
   slideDuration : number;
   slideshowDuration : string;
-  private subscription: Subscription;
+  private timerSubscription: Subscription;
 
   @ViewChild(AudioPlayerComponent)
   private audioPlayerComponent: AudioPlayerComponent;
@@ -68,7 +73,11 @@ export class SlideshowPlayerComponent implements OnInit, OnDestroy, AfterViewChe
             this.selectedSlideshow = ss;
             this.selectedSlideshowLength = ss.slides.length;
             
-            this.audioPlayerComponent.selectedSoundtrackId = ss.soundtrack;
+            //this.audioPlayerComponent.selectedSoundtrackId = ss.soundtrack;
+            this.soundtrackIndexer = 0;
+            this.audioPlayerComponent.selectedSoundtrackId = ss.soundtracks[this.soundtrackIndexer];
+            this.slideshowSoundtracks = ss.soundtracks;
+
             //this.slidePlayerComponent.currentSlideId = ss.slides[0];
             this.slideshowSlides = ss.slides;
             this.slideIndexer = 0;
@@ -91,6 +100,10 @@ export class SlideshowPlayerComponent implements OnInit, OnDestroy, AfterViewChe
     this.stopTimer();
   }
 
+  pauseSlideshow() : void {
+    this.stopTimer();
+  }
+
   stopTimer()
   {
     this.unsubscribe();
@@ -98,11 +111,31 @@ export class SlideshowPlayerComponent implements OnInit, OnDestroy, AfterViewChe
 
   setUpTimer() : void {
     let timer = TimerObservable.create(0, this.slideDuration);
-    this.subscription = timer.subscribe(t => 
+    this.timerSubscription = timer.subscribe(t => 
       {
-        //this.tick = t;
         this.slideIncrementer();
       });
+
+    // const countdownSeconds = 60;
+    // const setHTML = id => val => document.getElementById(id).innerHTML = val;
+    // const pauseButton = document.getElementById('pause');
+    // const resumeButton = document.getElementById('resume');
+    // const interval = Observable.interval(1000).mapTo(-1);    // every second
+    
+    // const pause = Observable.fromEvent(pauseButton, 'click').mapTo(Observable.of(false))
+    // const resume = Observable.fromEvent(resumeButton, 'click').mapTo(interval);
+    
+    // const timer = Observable
+    //   .merge(pause, resume)
+    //   .startWith(interval)
+    //   .switchMap(val => val)
+    //   .scan((acc, curr) => curr ? curr + acc : acc, countdownSeconds)
+    //   .subscribe(_ => {
+    //                     //setHTML('remaining');
+    //                     this.slideIncrementer();
+    //   });
+
+    
   }
 
   slideIncrementer() : void {
@@ -124,8 +157,10 @@ export class SlideshowPlayerComponent implements OnInit, OnDestroy, AfterViewChe
   }
 
   preloadSlide() : void {
-    let slideToPreload: number = this.slideshowSlides[this.slideIndexer]
-    this.slidePlayerComponent.preloadSlideId = slideToPreload;
+    if(this.slideIndexer < this.slideshowSlides.length) {
+      let slideToPreload: number = this.slideshowSlides[this.slideIndexer]
+      this.slidePlayerComponent.preloadSlideId = slideToPreload;
+    }
   }
 
   onAudioPlay(isPlaying : boolean) : void {
@@ -136,13 +171,20 @@ export class SlideshowPlayerComponent implements OnInit, OnDestroy, AfterViewChe
 
   onAudioPause(isPlaying : boolean) : void {
     if(!isPlaying) {
-      this.stopSlideshow();
+      //this.stopSlideshow();
+      this.pauseSlideshow();
     }
   }
 
   onAudioStop(isPlaying : boolean) : void {
     if(!isPlaying) {
       this.stopSlideshow();
+    }
+  }
+
+  onAudioEnded(ended : boolean) : void {
+    if(ended) {
+       this.stopSlideshow();
     }
   }
 
@@ -157,13 +199,15 @@ export class SlideshowPlayerComponent implements OnInit, OnDestroy, AfterViewChe
     let slideCount: number = this.slideshowSlides.length;
     let newSlideIndex = Number((slideCount * fractionalPosition).toFixed(0));
     this.slideIndexer = newSlideIndex;
+    this.isSlideJump = true;
 
     this.preloadSlide();
   }
 
   onSlidePreloaded(slideNumber : number) : void {
-    if(this.slideIndexer < 1)
+    if((this.slideIndexer < 1) || this.isSlideJump)
     {
+      this.isSlideJump = false;
       this.displayNextSlide();
     }
   }
@@ -173,8 +217,8 @@ export class SlideshowPlayerComponent implements OnInit, OnDestroy, AfterViewChe
   }
 
   unsubscribe() {
-    if(this.subscription != null) {
-      this.subscription.unsubscribe();
+    if(this.timerSubscription != null) {
+      this.timerSubscription.unsubscribe();
     }
   }
 

@@ -4,17 +4,18 @@
     <!-- <div><span>playing: </span>{{activeSoundtrack.filename}}.{{activeSoundtrack.filetype}}</div> -->
 
     <!-- Player Track -->
-    <div class="row align-items-end">
+    <!-- <div class="row align-items-end">
         <div class="col-1"></div>
         <div class="col-10 text-center">
             <p class="track"><span>PG Memories Radio Edit</span></p>
         </div>
         <div class="col-1"></div>
-    </div>
+    </div> -->
 
-    <!-- Player Buttons -->
+    
     <div class="row align-items-end">
         <div class="col-1"></div>
+        <!-- Player Buttons -->
         <div class="col-10">
             <div class="text-center">
                 <button (click)="muteAudio()" data-am-button="small" id="btn-mute">
@@ -26,16 +27,31 @@
                 <button (click)="stopAudio()" data-am-button="small" id="btn-stop">
                     <i id="btn-stop-i" class="fas fa-stop"></i>
                 </button>	
+            </div>
+            <div class="text-center"></div>
+            <div>
                 <span id="audioElapsed">0.00</span>
                 <span> / </span>
                 <span id="audioDuration">0.00</span>
             </div>
+
+             <!-- Progress Bar -->
+            <div id="audioPlayerControls">
+                <div id="progress-bar" (click)="setCurrentTime($event)">
+                    <span id="progress"></span>
+                </div>	
+                <div margin="0,0,10,0">
+                    <footer class="footer text-center">The track "{{_song}}" by the artist "{{_musician}}"</footer>
+                </div> 
+            </div>
         </div>
-        <div class="col-1"></div>
+        <div class="col-1">
+            <!-- <h4>Time remaining: <span id="remaining"></span></h4> -->
+        </div>
     </div>
 
     <!-- Progress Bar -->
-    <div id="foot" class="row align-items-end">
+    <!-- <div id="foot" class="row align-items-end">
         <div class="col-1"></div>
         <div id="audioPlayerControls" class="col-10">
             <div id="progress-bar" (click)="setCurrentTime($event)">
@@ -46,7 +62,7 @@
             </div> 
         </div>
         <div class="col-1"></div>
-    </div>
+    </div> -->
             
 </div>
    
