@@ -5,6 +5,7 @@ import { Location } from '@angular/common';
 
 import { Soundtrack } from '../models/soundtrack';
 import { SoundtrackService }  from '../services/soundtrack.service';
+import { AudioChangeEnum } from '../shared/AudioChangeEnum';
 import { EventListener } from '@angular/core/src/debug/debug_node';
 
 import * as $ from 'jquery/dist/jquery.min.js';
@@ -33,12 +34,15 @@ import { of } from 'rxjs/observable/of';
 
 export class AudioPlayerComponent implements OnInit, AfterViewChecked {
   private _subscriptions = new Subscription();
+  private _soundtracks: Soundtrack[] = new Array<Soundtrack>(2);
   private _timer$;
   private _selectedSoundtrackId : number;
+  private _selectedSoundtrackIds : number[];
   private _selectedSoundtrack : Soundtrack = new Soundtrack();
   private _isPlaying : boolean = false;
   private _song : string = "";
   private _musician : string = "";
+  private _audioPosition : AudioChangeEnum = AudioChangeEnum.Even;
   @Output() onAudioElapsedChanged = new EventEmitter<number>();
   @Output() onAudioDurationChanged = new EventEmitter<number>();
   // @Output() onAudio = new EventEmitter<number>();
@@ -46,18 +50,20 @@ export class AudioPlayerComponent implements OnInit, AfterViewChecked {
   @Output() onAudioPlay = new EventEmitter<boolean>();
   @Output() onAudioPause = new EventEmitter<boolean>();
   @Output() onAudioStop = new EventEmitter<boolean>();
-
   @Output() playObservable = new Observable();
 
+  
   // selectedSoundtrackId property
-  @Input() set selectedSoundtrackId(id: number) {
-    if(id) {
-    this._selectedSoundtrackId = id;
-    this.setSoundtrack(id);
+  @Input() set selectedSoundtrackIds(ids: number[]) {
+    if(ids && (ids.length > 0)) {
+      this._selectedSoundtrackIds = ids;
+      this._selectedSoundtrackId = ids[0];
+      this.loadSoundtracks(ids);
+      //this.setSoundtrackSource(this._selectedSoundtrackId);
     }
   }
-  get selectedSoundtrackId(): number { 
-    return this._selectedSoundtrackId; 
+  get selectedSoundtrackIds(): number[] { 
+    return this._selectedSoundtrackIds; 
   }
 
   constructor(
@@ -69,27 +75,53 @@ export class AudioPlayerComponent implements OnInit, AfterViewChecked {
   ngOnInit(): void {
     if( +this.route.snapshot.pathFromRoot.toString().includes('audioplayer')) {
       const id = +this.route.snapshot.paramMap.get('id');
-      this.setSoundtrack(id);
-
+      //this.setSoundtrackSource(id);
+      this._selectedSoundtrackId = id;
+      this.loadSoundtrack(id, 0);
     }
   }
 
   ngAfterViewChecked() {
   }
 
-  setSoundtrack(id: number) : void {
+  loadSoundtracks(ids: number[]) : void {
+    ids.forEach((i) => {
+      //let isFirst: Boolean = ids.indexOf(i) === 0;
+      let index: number = ids.indexOf(i);
+      this.loadSoundtrack(i, index);
+    })
+  }
+
+loadSoundtrack(id: number, index: number) : void {
     const sounds$ = this.soundtrackService
-              .getSoundtrackNo404(id)
-              .subscribe(st => 
-                {
-                  this._selectedSoundtrack = st;
-                  this._song = st.song;
-                  this._musician = st.musician;
-                  this.setAudioElementSource(st);
-                });
+    .getSoundtrackNo404(id)
+    .subscribe(st => 
+      {
+          //this._soundtracks.push(st);
+          let isFirst: Boolean = index === 0;
+          if(index === 0) {
+            this.setAudioElementSource(st, 0.0);
+          }
+          this._soundtracks[index] = st;
+      });
 
       this._subscriptions.add(sounds$);
   }
+
+
+  // setSoundtrackSource(id: number) : void {
+  //   const sounds$ = this.soundtrackService
+  //             .getSoundtrackNo404(id)
+  //             .subscribe(st => 
+  //               {
+  //                 this._selectedSoundtrack = st;
+  //                 this._song = st.song;
+  //                 this._musician = st.musician;
+  //                 this.setAudioElementSource(st);
+  //               });
+
+  //     this._subscriptions.add(sounds$);
+  // }
 
   playPauseAudio(): void {
     let audio: HTMLMediaElement = <HTMLMediaElement>document.getElementById("audioPlayer");
@@ -203,71 +235,221 @@ export class AudioPlayerComponent implements OnInit, AfterViewChecked {
   }
 
 
-  updateProgressAudio(): void {
-      var progress = document.getElementById("progress");
-      let audio: HTMLMediaElement = <HTMLMediaElement>document.getElementById("audioPlayer");
-
-      var value = 0;
-      if (audio.currentTime > 0) {
-        let audioElapsed: HTMLMediaElement = <HTMLMediaElement>document.getElementById("audioElapsed");
-        let cTimeMins: number = audio.currentTime / 60; 
-        audioElapsed.textContent = cTimeMins.toFixed(2);
-
-        value = Math.floor((100 / audio.duration) * audio.currentTime);
-      }
-      progress.style.width = value + "%";
-  }
 
   getAudioElement(): HTMLMediaElement {
     let audio: HTMLMediaElement = <HTMLMediaElement>document.getElementById("audioPlayer");
     return audio;
   }
 
-  setAudioElementSource(st: Soundtrack): void {
+  setAudioElementSource(sound: Soundtrack, startTime: number): void {
+    this.removeEventListeners();
     let audio = this.getAudioElement();
     
-    if((st != null) && (st.filename)) {
-      audio.src = st.filename + st.filetype;
-      this.addEventListeners();
+    if((sound != null) && (sound.filename)) {
+      this._selectedSoundtrackId = sound.id;
+      this._selectedSoundtrack = sound;
+
+      audio.src = sound.filename + sound.filetype;
+      audio.currentTime = startTime;
+
+      this._musician = sound.musician;
+      this._song = sound.song;
+
+      // if(startTime <= 0) {
+        this.addEventListeners();
+      // }
     }
   }
 
-  /* Allows to change the current time of the song */ 
-  setCurrentTime(e: any) {
+  // jumpingSongs(time: number) : Boolean {
+  //   let firstDuration: number = this._soundtracks[0].duration;
+    
+  //   if(this.getCurrentSoundtrackIndex() < 1) 
+  //     return (time > firstDuration);
+
+  //   return (time < firstDuration);
+  // }
+
+  getAudioPosition(time: number) : AudioChangeEnum {
+    let firstDuration: number = this._soundtracks[0].duration;
+    //let secondDuration: number = this._soundtracks[1].duration;
+    let currentIndex: number = this.getCurrentSoundtrackIndex();
+
+    if(currentIndex === 0)
+    {
+      this._audioPosition = (firstDuration <= time) ? AudioChangeEnum.Plus : AudioChangeEnum.Even;
+    }
+    else
+    {
+      this._audioPosition = (firstDuration > time) ? AudioChangeEnum.Minus : AudioChangeEnum.Even;
+    }
+
+    return this._audioPosition;
+  }
+
+   /* Allows to change the current time of the song */ 
+   setCurrentTime(e: any) {
     let audio = this.getAudioElement();
+    audio.pause();
+
     var elem = $('#progress-bar');  
     var posX_left = elem.offset().left; 
     var x = e.clientX - posX_left;
     let ratio = x / elem.width();
 
-    let time: number = ratio * audio.duration;
-    audio.currentTime = time;
+    let totalDuration: number = this.getTotalDuration();
+    let time: number = ratio * totalDuration;
+    let elapsedTime: number = 0;
 
-    this.onAudioElapsedChanged.emit(audio.currentTime / audio.duration);
+    // Jump to a different soundtrack ?
+    let audioPosition: AudioChangeEnum = this.getAudioPosition(time);
+    if(audioPosition === AudioChangeEnum.Minus)
+    {
+      // Prev Track 
+      this.setAudioElementSource(this.getPrevSoundtrack(), time);
+      elapsedTime = time;
+    }
+    else if(audioPosition === AudioChangeEnum.Plus) {
+      // Next Track
+      let timeIntoNextSong: number = time - this._soundtracks[0].duration;
+      this.setAudioElementSource(this.getNextSoundtrack(), timeIntoNextSong);
+      elapsedTime =  this._soundtracks[0].duration + timeIntoNextSong;
+    }
+    else{
+      // Track unchanged
+      let currentIndex: number = this.getCurrentSoundtrackIndex();
+      if(currentIndex === 0)
+      {
+        audio.currentTime = elapsedTime = time;
+      }
+      else
+      {
+        elapsedTime = time;
+        audio.currentTime = time - this._soundtracks[0].duration;
+      }
+    }
+    this.onAudioElapsedChanged.emit(elapsedTime / totalDuration);
+    
+    audio.play();
+  }
+
+  getTotalDuration() : number {
+    let duration : number = 0;
+    this._soundtracks.forEach((st) => {
+      duration = duration + st.duration;
+    })
+    return duration;
+  }
+
+  getCurrentSoundtrackIndex() : number {
+    return this.selectedSoundtrackIds.indexOf(this._selectedSoundtrackId);
+  }
+
+  getLastSoundtrackIndex() : number {
+    return this._selectedSoundtrackIds.length - 1;
+  }
+
+  getNextSoundtrack(): Soundtrack {
+    let currentIndex = this.getCurrentSoundtrackIndex();
+    let lastIndex = this.getLastSoundtrackIndex();
+    if(currentIndex === lastIndex) 
+      return null;
+
+    let nextSoundtrack = this._soundtracks[currentIndex + 1];
+    return nextSoundtrack;
+  }
+
+  getPrevSoundtrack(): Soundtrack {
+    let currentIndex = this.getCurrentSoundtrackIndex();
+    let lastIndex = this.getLastSoundtrackIndex();
+    if(currentIndex === lastIndex) 
+      return this._soundtracks[currentIndex - 1];
+
+    return null;
   }
 
   private metaDataFunc() { };
   private audioEndedFunc() { };
+  private updateProgressFunc() { };
 
   addEventListeners()
   {
     let audio: HTMLMediaElement = <HTMLMediaElement>document.getElementById("audioPlayer");
     let childAudio = this;
 
+    // Audio Updated
     function audioUpdated() {
       let audioDuration: HTMLMediaElement = <HTMLMediaElement>document.getElementById("audioDuration");
-      audioDuration.textContent = (audio.duration / 60).toFixed(2);
-      childAudio.onAudioDurationChanged.emit(audio.duration);
+
+      audioDuration.textContent = (childAudio.getTotalDuration() / 60).toFixed(2);
+      //audioDuration.textContent = (audio.duration / 60).toFixed(2);
+      //childAudio.onAudioDurationChanged.emit(audio.duration);
+      let total: number = childAudio.getTotalDuration();
+      childAudio.onAudioDurationChanged.emit(total);
     }
     this.metaDataFunc = audioUpdated;
 
+    // Audio Ended
     function audioEnded(): void {
-      childAudio.stopAudio();
-      childAudio.onAudioEnded.emit(true);
+      let nextSoundtrack = childAudio.getNextSoundtrack();
+      //let lastIndexPlayed = childAudio.selectedSoundtrackIds.indexOf(childAudio._selectedSoundtrackId);
+      //let lastIndex = childAudio._selectedSoundtrackIds.length - 1;
+      if(nextSoundtrack) {
+        // Play next track
+        //let nextSoundtrack = childAudio._soundtracks[lastIndexPlayed + 1];
+        // childAudio._selectedSoundtrackId = nextSoundtrack.id;
+        childAudio.setAudioElementSource(nextSoundtrack, 0.0);
+
+        let totalDuration: number = childAudio.getTotalDuration();
+        let elapsedTime: number =  childAudio._soundtracks[0].duration;
+        childAudio.onAudioElapsedChanged.emit(elapsedTime / totalDuration);
+
+        audio.play();
+      }
+      else {
+        // Has last track played
+        childAudio.stopAudio();
+        childAudio.setAudioElementSource(childAudio._soundtracks[0], 0.0);
+        childAudio.onAudioEnded.emit(true);
+      }
     }
     this.audioEndedFunc = audioEnded;
 
-    this.addEventListener("timeupdate", this.updateProgressAudio);
+    // Audio Progress
+    function updateProgressAudio(): void {
+      var progress = document.getElementById("progress");
+      let audio: HTMLMediaElement = <HTMLMediaElement>document.getElementById("audioPlayer");
+
+      var value = 0;
+      if (audio.currentTime > 0) {
+        let audioElapsed: HTMLMediaElement = <HTMLMediaElement>document.getElementById("audioElapsed");
+        
+        //audioElapsed.textContent = cTimeMins.toFixed(2);
+
+        //value = Math.floor((100 / audio.duration) * audio.currentTime);
+        let totalDuration: number = childAudio.getTotalDuration();
+
+        if(childAudio.getCurrentSoundtrackIndex() === 0) {
+          // first song
+          // let cTimeMins: number = audio.currentTime / 60; 
+          audioElapsed.textContent = (audio.currentTime / 60).toFixed(2);
+          value = Math.floor((100 / totalDuration) * audio.currentTime);
+        }
+        else
+        {
+          // second song
+          let firstDuration = childAudio._soundtracks[0].duration;
+          audioElapsed.textContent = ((firstDuration + audio.currentTime) / 60).toFixed(2);
+          value = Math.floor((100 / totalDuration) * (firstDuration + audio.currentTime));
+        }
+      }
+      progress.style.width = value + "%";
+    }
+
+  
+    this.updateProgressFunc = updateProgressAudio;
+
+    this.addEventListener("timeupdate", this.updateProgressFunc);
     this.addEventListener("ended", this.audioEndedFunc);
     this.addEventListener("loadedmetadata", this.metaDataFunc);
   }
@@ -278,7 +460,7 @@ export class AudioPlayerComponent implements OnInit, AfterViewChecked {
   }
 
   removeEventListeners() : void {
-    this.removeEventListener("timeupdate", this.updateProgressAudio);
+    this.removeEventListener("timeupdate", this.updateProgressFunc);
     this.removeEventListener("ended", this.audioEndedFunc);
     this.removeEventListener("loadedmetadata", this.metaDataFunc);
   }

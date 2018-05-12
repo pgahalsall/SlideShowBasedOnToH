@@ -25,7 +25,7 @@ import { Slide } from '../models/slide';
 export class SlideshowPlayerComponent implements OnInit, OnDestroy, AfterViewChecked, AfterViewInit {
   selectedSlideshow: Slideshow = new Slideshow();
   selectedSlideshowLength : number;
-  selectedSoundtrackId : number;
+  selectedSoundtrackIds : number[];
   soundtrackIndexer : number;
   slideshowSoundtracks : number[];
 
@@ -75,7 +75,7 @@ export class SlideshowPlayerComponent implements OnInit, OnDestroy, AfterViewChe
             
             //this.audioPlayerComponent.selectedSoundtrackId = ss.soundtrack;
             this.soundtrackIndexer = 0;
-            this.audioPlayerComponent.selectedSoundtrackId = ss.soundtracks[this.soundtrackIndexer];
+            this.audioPlayerComponent.selectedSoundtrackIds = ss.soundtracks;
             this.slideshowSoundtracks = ss.soundtracks;
 
             //this.slidePlayerComponent.currentSlideId = ss.slides[0];
