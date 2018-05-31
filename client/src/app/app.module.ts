@@ -1,6 +1,6 @@
 import { NgModule }       from '@angular/core';
 import { BrowserModule }  from '@angular/platform-browser';
-import { FormsModule }    from '@angular/forms';
+import { FormsModule, FormBuilder, ReactiveFormsModule }    from '@angular/forms';
 import { HttpClientModule }    from '@angular/common/http';
 
 // Data Service
@@ -8,6 +8,8 @@ import { HttpClientInMemoryWebApiModule } from 'angular-in-memory-web-api';
 import { InMemoryDataService }  from './services/in-memory-data.service';
 
 // Services
+import { HttpErrorHandler }     from './services/httperrorhandler.service';
+
 import { HeroService }          from './services/hero.service';
 import { MessageService }       from './services/message.service';
 import { MessagesComponent }    from './messages/messages.component';
@@ -40,20 +42,24 @@ import { SlidePlayerComponent } from './slideplayer/slideplayer.component';
 import { GalleryComponent } from './gallery/gallery.component';
 import { LoginComponent } from './login/login.component';
 import { MusicPickerComponent } from './musicpicker/musicpicker.component';
+import { AuthService } from './services/auth.service';
+//import { GuardsComponent } from './guards/guards.component';
+
+import { httpInterceptorProviders } from './interceptors/index';
+
 
 @NgModule({
   imports: [
     BrowserModule,
-    FormsModule,
+    FormsModule, ReactiveFormsModule,
     AppRoutingModule,
-    HttpClientModule,
-
+    HttpClientModule
     // The HttpClientInMemoryWebApiModule module intercepts HTTP requests
     // and returns simulated server responses.
     // Remove it when a real server is ready to receive requests.
-    HttpClientInMemoryWebApiModule.forRoot(
-      InMemoryDataService, { dataEncapsulation: false }
-    )
+    // HttpClientInMemoryWebApiModule.forRoot(
+    //   InMemoryDataService, { dataEncapsulation: false }
+    // )
   ],
   declarations: [
     AppComponent,
@@ -74,9 +80,9 @@ import { MusicPickerComponent } from './musicpicker/musicpicker.component';
     SlidePlayerComponent,
     GalleryComponent,
     LoginComponent,
-    MusicPickerComponent
+    MusicPickerComponent,
   ],
-  providers: [ HeroService, MessageService, SlideService, SoundtrackService, SlideshowService ],
+  providers: [ HeroService, MessageService, SlideService, SoundtrackService, SlideshowService, AuthService, httpInterceptorProviders ],
   bootstrap: [ AppComponent ]
 })
 export class AppModule { }

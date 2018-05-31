@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { environment } from '../../environments/environment';
 
 import { Observable } from 'rxjs/Observable';
 import { of } from 'rxjs/observable/of';
@@ -14,8 +15,10 @@ const httpOptions = {
 
 @Injectable()
 export class SlideService {
+  private API_URL = environment.apiUrl;
+  //private slidesUrl = 'api/slides';  // URL to web api
+  private slidesUrl = this.API_URL + 'slides';
 
-  private slidesUrl = 'api/slides';  // URL to web api
 
   constructor(
     private http: HttpClient,
@@ -32,7 +35,8 @@ export class SlideService {
 
   /** GET slide by id. Return `undefined` when id not found */
   getSlideNo404<Data>(slideId: number): Observable<Slide> {
-    const url = `${this.slidesUrl}/?slideId=${slideId}`;
+    //const url = `${this.slidesUrl}/?slideId=${slideId}`;
+    const url = `${this.slidesUrl}/${slideId}`;
     return this.http.get<Slide[]>(url)
       .pipe(
         map(slides => slides[0]), // returns a {0|1} element array
@@ -46,13 +50,16 @@ export class SlideService {
 
   /** GET slide by id. Will 404 if id not found */
   getSlide(slideId: number): Observable<Slide> {
-    const url = `${this.slidesUrl}/?slideId=${slideId}`;
+    //const url = `${this.slidesUrl}/?slideId=${slideId}`;
+    const url = `${this.slidesUrl}/${slideId}`;
     return this.http.get<Slide>(url)
     .pipe(
       tap(_ => {
-        this.log(`fetched slide slideId=${slideId}`);
+        //this.log(`fetched slide slideId=${slideId}`);
+        this.log(`fetched slide =${slideId}`);
       }),
       catchError(this.handleError<Slide>(`getSlide slideId=${slideId}`))
+      // catchError(this.handleError<Slide>(`getSlide slideId=${slideId}`))
     );
   }
 

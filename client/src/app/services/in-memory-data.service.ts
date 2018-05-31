@@ -1,4 +1,5 @@
 import { InMemoryDbService } from 'angular-in-memory-web-api';
+import { environment } from '../../environments/environment';
 import { SoundTypeEnum } from '../shared/soundtypeenum';
 
 import { Hero } from '../models/hero';

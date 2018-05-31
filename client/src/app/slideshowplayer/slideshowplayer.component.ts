@@ -1,10 +1,12 @@
 import { Component, OnInit, AfterViewInit, ViewChild, OnDestroy, AfterViewChecked, Input, ElementRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
-import { Subscription, Subject } from "rxjs";
-import { Observable } from "rxjs/observable";
+
+
+import { Observable, fromEvent, interval, merge, empty, of, Subscription } from 'rxjs';
+import { switchMap, mapTo, scan, startWith, takeWhile } from 'rxjs/operators';
+
 import { TimerObservable } from "rxjs/observable/TimerObservable";
-import { switchMap }  from "rxjs/operators/switchMap";
 
 import { AudioPlayerComponent }  from '../audioplayer/audioplayer.component';
 import { SlidePlayerComponent }  from '../slideplayer/slideplayer.component';

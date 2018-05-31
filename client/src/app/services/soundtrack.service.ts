@@ -1,12 +1,15 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
-import { Observable } from 'rxjs/Observable';
+import { Observable, } from 'rxjs/Observable';
 import { of } from 'rxjs/observable/of';
 import { catchError, map, tap } from 'rxjs/operators';
 
 import { Soundtrack } from '../models/soundtrack';
 import { MessageService } from './message.service';
+
+import { HandleError } from '../services/httperrorhandler.service'
+import { environment } from '../../environments/environment';
 
 const httpOptions = {
   headers: new HttpHeaders({ 'Content-Type': 'application/json' })
@@ -14,8 +17,9 @@ const httpOptions = {
 
 @Injectable()
 export class SoundtrackService {
-
-  private soundtracksUrl = 'api/soundtracks';  // URL to web api
+  private API_URL = environment.apiUrl;
+  //private soundtracksUrl = 'api/soundtracks';  // URL to web api
+  private soundtracksUrl = this.API_URL + 'soundtracks';
 
   constructor(
     private http: HttpClient,

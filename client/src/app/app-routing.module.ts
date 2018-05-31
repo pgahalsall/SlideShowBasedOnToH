@@ -5,6 +5,8 @@ import { DashboardComponent }   from './dashboard/dashboard.component';
 import { HeroesComponent }      from './heroes/heroes.component';
 import { HeroDetailComponent }  from './hero-detail/hero-detail.component';
 
+//import { AuthGuard } from './guards/index';
+
 import { SlidesComponent }   from './slides/slides.component';
 import { SlideDetailComponent }   from './slide-detail/slide-detail.component';
 import { SoundtracksComponent }   from './soundtracks/soundtracks.component';
@@ -19,7 +21,10 @@ import { LoginComponent }   from './login/login.component';
 import { MusicPickerComponent }   from './musicpicker/musicpicker.component';
 
 const routes: Routes = [
-  { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
+  //{ path: '', component: DashboardComponent, canActivate: [AuthGuard] },
+  //{ path: '', redirectTo: '/dashboard', pathMatch: 'full' },
+  { path: '', redirectTo: '/slideshowplayer/2', pathMatch: 'full' },
+  // { path: '**', redirectTo: '' },
   { path: 'dashboard', component: DashboardComponent },
   { path: 'detail/:id', component: HeroDetailComponent },
   { path: 'heroes', component: HeroesComponent },
@@ -35,6 +40,7 @@ const routes: Routes = [
   { path: 'gallery', component: GalleryComponent },
   { path: 'login', component: LoginComponent },
   { path: 'musicpicker', component: MusicPickerComponent },
+
 ];
 
 @NgModule({

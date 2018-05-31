@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { environment } from '../../environments/environment';
 
 import { Observable } from 'rxjs/Observable';
 import { of } from 'rxjs/observable/of';
@@ -15,7 +16,9 @@ const httpOptions = {
 @Injectable()
 export class HeroService {
 
-  private heroesUrl = 'api/heroes';  // URL to web api
+  private API_URL = environment.apiUrl;
+  //private heroesUrl = 'api/heroes';  // URL to web api
+  private heroesUrl = this.API_URL + 'heroes';
 
   constructor(
     private http: HttpClient,

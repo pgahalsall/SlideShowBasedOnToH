@@ -49,7 +49,7 @@ What needs adding for a full MEAN stack project :-
 
 1. The Express, Node and Mongo db pieces that make up the server side 
 2. Route Authorization
-3. Login passport/jwt
+3. Login passport/jwt and google strategy    
 4. Bootstrap and styling. *** Bootstrap has been added to angular-cli.json ***
 5. Font-Awesome / Angular issue means css/fonts have been added to Assets folder. Sould just be referenced in node_modules
 

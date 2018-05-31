@@ -9,21 +9,9 @@ import { AudioChangeEnum } from '../shared/AudioChangeEnum';
 import { EventListener } from '@angular/core/src/debug/debug_node';
 
 import * as $ from 'jquery/dist/jquery.min.js';
-//import { interval } from 'rxjs/observable/interval';
 
-import { Subscription } from 'rxjs/subscription';
-import { Observable } from 'rxjs/Observable';
+import { Observable, fromEvent, interval, merge, empty, of, Subscription } from 'rxjs';
 import { switchMap, mapTo, scan, startWith, takeWhile } from 'rxjs/operators';
-
-// import 'rxjs/add/observable/of';
-// import 'rxjs/add/observable/merge';
-// import 'rxjs/add/observable/empty';
-
-import { interval } from 'rxjs/observable/interval';
-import { fromEvent } from 'rxjs/observable/fromEvent';
-import { merge } from 'rxjs/observable/merge';
-import { empty } from 'rxjs/observable/empty';
-import { of } from 'rxjs/observable/of';
 
 
 @Component({
@@ -34,7 +22,7 @@ import { of } from 'rxjs/observable/of';
 
 export class AudioPlayerComponent implements OnInit, AfterViewChecked {
   private _subscriptions = new Subscription();
-  private _soundtracks: Soundtrack[] = new Array<Soundtrack>(2);
+  private _soundtracks: Soundtrack[] = new Array<Soundtrack>();
   private _timer$;
   private _selectedSoundtrackId : number;
   private _selectedSoundtrackIds : number[];
@@ -75,7 +63,6 @@ export class AudioPlayerComponent implements OnInit, AfterViewChecked {
   ngOnInit(): void {
     if( +this.route.snapshot.pathFromRoot.toString().includes('audioplayer')) {
       const id = +this.route.snapshot.paramMap.get('id');
-      //this.setSoundtrackSource(id);
       this._selectedSoundtrackId = id;
       this.loadSoundtrack(id, 0);
     }
@@ -86,7 +73,6 @@ export class AudioPlayerComponent implements OnInit, AfterViewChecked {
 
   loadSoundtracks(ids: number[]) : void {
     ids.forEach((i) => {
-      //let isFirst: Boolean = ids.indexOf(i) === 0;
       let index: number = ids.indexOf(i);
       this.loadSoundtrack(i, index);
     })
@@ -94,10 +80,10 @@ export class AudioPlayerComponent implements OnInit, AfterViewChecked {
 
 loadSoundtrack(id: number, index: number) : void {
     const sounds$ = this.soundtrackService
-    .getSoundtrackNo404(id)
+    //.getSoundtrackNo404(id)
+    .getSoundtrack(id)
     .subscribe(st => 
       {
-          //this._soundtracks.push(st);
           let isFirst: Boolean = index === 0;
           if(index === 0) {
             this.setAudioElementSource(st, 0.0);
@@ -107,21 +93,6 @@ loadSoundtrack(id: number, index: number) : void {
 
       this._subscriptions.add(sounds$);
   }
-
-
-  // setSoundtrackSource(id: number) : void {
-  //   const sounds$ = this.soundtrackService
-  //             .getSoundtrackNo404(id)
-  //             .subscribe(st => 
-  //               {
-  //                 this._selectedSoundtrack = st;
-  //                 this._song = st.song;
-  //                 this._musician = st.musician;
-  //                 this.setAudioElementSource(st);
-  //               });
-
-  //     this._subscriptions.add(sounds$);
-  // }
 
   playPauseAudio(): void {
     let audio: HTMLMediaElement = <HTMLMediaElement>document.getElementById("audioPlayer");
@@ -142,11 +113,6 @@ loadSoundtrack(id: number, index: number) : void {
       playBtnItalic.classList.remove('fa-play');
       playBtnItalic.classList.add('fa-pause');
       this.onAudioPlay.emit(this._isPlaying);
-
-      // const setHTML = id => val => document.getElementById(id).innerHTML = val;
-      // //this._timer$.subscribe(this.setHtmlFunc('remaining'));
-      // this._timer$.subscribe(setHTML('remaining'));
-      // this._subscriptions.add(this._timer$);
     }
   }
 
@@ -160,8 +126,6 @@ loadSoundtrack(id: number, index: number) : void {
 
   stopAudio(): void {
     let audio = this.getAudioElement();
-    // this.removeEventListeners();
-
     let stopBtnItalic = document.getElementById("btn-play-i");
 
     //Stop the track
@@ -173,51 +137,6 @@ loadSoundtrack(id: number, index: number) : void {
     this._isPlaying = false;
     this.onAudioStop.emit(this._isPlaying);
   }
-
-  // setHtmlFunc(val: any, id: string) : void {
-  //   let remain : HTMLElement = document.getElementById(id);
-  //   remain.innerHTML = val;
-  // }
-
-  // setupPlayObservable(countdownSeconds : number)
-  // {
-  //   let audio: HTMLMediaElement = this.getAudioElement();
-
-  //   const pauseButton = document.getElementById('btn-play-pause');
-  //   const resumeButton = document.getElementById('btn-mute');
-  //   const stopButton = document.getElementById('btn-stop');
-
-
-  //   const setHTML = id => val => (document.getElementById(id).innerHTML = val);
-  //   const interval$: any = interval(1000).pipe(mapTo(-1));
-
-  //   const pause$ = fromEvent(pauseButton, 'click').pipe(mapTo(false));
-  //   const resume$ = fromEvent(resumeButton, 'click').pipe(mapTo(true));
-
-  //   this._timer$ = merge(pause$, resume$)
-  //                   .pipe(
-  //                         startWith(true),
-  //                         switchMap(val => 
-  //                           {
-  //                             return (val ? interval$ : empty());
-  //                           }),
-  //                         scan((acc, curr) => {
-  //                                               if(curr)
-  //                                               {
-  //                                                 return curr + acc;
-  //                                               }
-  //                                               else {
-  //                                                 return acc;
-  //                                               }
-  //                                               //return (curr ? curr + acc : acc);
-  //                         }, countdownSeconds),
-  //                         takeWhile(v => 
-  //                                       {
-  //                                         return v >= 0;
-  //                                       })
-  //                         )
-               
-  // }
 
   muteAudio(): void {
     let audio = this.getAudioElement();
@@ -234,8 +153,6 @@ loadSoundtrack(id: number, index: number) : void {
     }
   }
 
-
-
   getAudioElement(): HTMLMediaElement {
     let audio: HTMLMediaElement = <HTMLMediaElement>document.getElementById("audioPlayer");
     return audio;
@@ -249,30 +166,18 @@ loadSoundtrack(id: number, index: number) : void {
       this._selectedSoundtrackId = sound.id;
       this._selectedSoundtrack = sound;
 
-      audio.src = sound.filename + sound.filetype;
+      audio.src = sound.filename + "." + sound.filetype;
       audio.currentTime = startTime;
 
       this._musician = sound.musician;
       this._song = sound.song;
 
-      // if(startTime <= 0) {
-        this.addEventListeners();
-      // }
+      this.addEventListeners();
     }
   }
 
-  // jumpingSongs(time: number) : Boolean {
-  //   let firstDuration: number = this._soundtracks[0].duration;
-    
-  //   if(this.getCurrentSoundtrackIndex() < 1) 
-  //     return (time > firstDuration);
-
-  //   return (time < firstDuration);
-  // }
-
   getAudioPosition(time: number) : AudioChangeEnum {
     let firstDuration: number = this._soundtracks[0].duration;
-    //let secondDuration: number = this._soundtracks[1].duration;
     let currentIndex: number = this.getCurrentSoundtrackIndex();
 
     if(currentIndex === 0)
@@ -368,6 +273,12 @@ loadSoundtrack(id: number, index: number) : void {
     return null;
   }
 
+  setSoundtrackDuration(duration: number) {
+    let currentIndex = this.getCurrentSoundtrackIndex();
+    let currentSoundtrack = this._soundtracks[currentIndex]
+    currentSoundtrack.duration = duration;
+  }
+
   private metaDataFunc() { };
   private audioEndedFunc() { };
   private updateProgressFunc() { };
@@ -381,9 +292,8 @@ loadSoundtrack(id: number, index: number) : void {
     function audioUpdated() {
       let audioDuration: HTMLMediaElement = <HTMLMediaElement>document.getElementById("audioDuration");
 
+      childAudio.setSoundtrackDuration(audio.duration);
       audioDuration.textContent = (childAudio.getTotalDuration() / 60).toFixed(2);
-      //audioDuration.textContent = (audio.duration / 60).toFixed(2);
-      //childAudio.onAudioDurationChanged.emit(audio.duration);
       let total: number = childAudio.getTotalDuration();
       childAudio.onAudioDurationChanged.emit(total);
     }
@@ -392,12 +302,8 @@ loadSoundtrack(id: number, index: number) : void {
     // Audio Ended
     function audioEnded(): void {
       let nextSoundtrack = childAudio.getNextSoundtrack();
-      //let lastIndexPlayed = childAudio.selectedSoundtrackIds.indexOf(childAudio._selectedSoundtrackId);
-      //let lastIndex = childAudio._selectedSoundtrackIds.length - 1;
       if(nextSoundtrack) {
         // Play next track
-        //let nextSoundtrack = childAudio._soundtracks[lastIndexPlayed + 1];
-        // childAudio._selectedSoundtrackId = nextSoundtrack.id;
         childAudio.setAudioElementSource(nextSoundtrack, 0.0);
 
         let totalDuration: number = childAudio.getTotalDuration();
@@ -419,34 +325,29 @@ loadSoundtrack(id: number, index: number) : void {
     function updateProgressAudio(): void {
       var progress = document.getElementById("progress");
       let audio: HTMLMediaElement = <HTMLMediaElement>document.getElementById("audioPlayer");
+      if(audio) {
+          var value = 0;
+          if (audio.currentTime > 0) {
+            let audioElapsed: HTMLMediaElement = <HTMLMediaElement>document.getElementById("audioElapsed");
+            let totalDuration: number = childAudio.getTotalDuration();
 
-      var value = 0;
-      if (audio.currentTime > 0) {
-        let audioElapsed: HTMLMediaElement = <HTMLMediaElement>document.getElementById("audioElapsed");
-        
-        //audioElapsed.textContent = cTimeMins.toFixed(2);
-
-        //value = Math.floor((100 / audio.duration) * audio.currentTime);
-        let totalDuration: number = childAudio.getTotalDuration();
-
-        if(childAudio.getCurrentSoundtrackIndex() === 0) {
-          // first song
-          // let cTimeMins: number = audio.currentTime / 60; 
-          audioElapsed.textContent = (audio.currentTime / 60).toFixed(2);
-          value = Math.floor((100 / totalDuration) * audio.currentTime);
-        }
-        else
-        {
-          // second song
-          let firstDuration = childAudio._soundtracks[0].duration;
-          audioElapsed.textContent = ((firstDuration + audio.currentTime) / 60).toFixed(2);
-          value = Math.floor((100 / totalDuration) * (firstDuration + audio.currentTime));
-        }
+            if(childAudio.getCurrentSoundtrackIndex() === 0) {
+              // first song
+              audioElapsed.textContent = (audio.currentTime / 60).toFixed(2);
+              value = Math.floor((100 / totalDuration) * audio.currentTime);
+            }
+            else
+            {
+              // second song
+              let firstDuration = childAudio._soundtracks[0].duration;
+              audioElapsed.textContent = ((firstDuration + audio.currentTime) / 60).toFixed(2);
+              value = Math.floor((100 / totalDuration) * (firstDuration + audio.currentTime));
+            }
+          }
+          progress.style.width = value + "%";
       }
-      progress.style.width = value + "%";
     }
 
-  
     this.updateProgressFunc = updateProgressAudio;
 
     this.addEventListener("timeupdate", this.updateProgressFunc);
@@ -467,7 +368,8 @@ loadSoundtrack(id: number, index: number) : void {
 
   removeEventListener(eventName : string, eventFunc: () => void) : void {
     let audio = this.getAudioElement();
-    audio.removeEventListener(eventName, eventFunc, false);
+    if(audio)
+      audio.removeEventListener(eventName, eventFunc, false);
   }
 
   ngOnDestroy() {

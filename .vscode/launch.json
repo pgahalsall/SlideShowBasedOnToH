@@ -3,18 +3,20 @@
     "configurations": [
         
         {
+            "sourceMaps": true,
             "type": "chrome",
             "request": "launch",
             "name": "Launch Chrome against localhost",
             "url": "http://localhost:4200",
-            "webRoot": "${workspaceFolder}"
+            "webRoot": "${workspaceFolder}/client/src"
         },
         {
+            "sourceMaps": true,
             "type": "chrome",
             "request": "attach",
             "name": "Attach to Chrome",
             "port": 9222,
-            "webRoot": "${workspaceFolder}"
+            "webRoot": "${workspaceFolder}/client/src"
         }
     ]
 }
