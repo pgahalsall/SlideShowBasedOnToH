@@ -5,5 +5,12 @@
 
 export const environment = {
   production: false,
-  apiUrl: 'http://localhost:3000/api/'
+  apiUrl: 'http://localhost:3000/api/',
+  auth: {
+    clientID: 'YOUR-AUTH0-CLIENT-ID',
+    domain: 'YOUR-AUTH0-DOMAIN', // e.g., you.auth0.com
+    audience: 'http://localhost:3000', // e.g., YOUR-AUTH0-API-IDENTIFIER
+    redirect: 'http://localhost:4200/auth0/callback',
+    scope: 'openid profile email'
+  }
 };

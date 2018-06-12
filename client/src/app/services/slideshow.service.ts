@@ -49,10 +49,11 @@ export class SlideshowService {
   /** GET slideshow by id. Will 404 if id not found */
   getSlideshow(id: number): Observable<Slideshow> {
     const url = `${this.slideshowsUrl}/${id}`;
-    return this.http.get<Slideshow>(url).pipe(
-      tap(_ => this.log(`fetched slideshow id=${id}`)),
-      catchError(this.handleError<Slideshow>(`getSlideshow id=${id}`))
-    );
+    return this.http.get<Slideshow>(url)
+      .pipe(
+        tap(_ => this.log(`fetched slideshow id=${id}`)),
+        catchError(this.handleError<Slideshow>(`getSlideshow id=${id}`))
+      );
   }
 
   /* GET slideshows whose name contains search term */

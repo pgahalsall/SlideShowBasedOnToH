@@ -1,11 +1,7 @@
 import { NgModule }             from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-import { DashboardComponent }   from './dashboard/dashboard.component';
-import { HeroesComponent }      from './heroes/heroes.component';
-import { HeroDetailComponent }  from './hero-detail/hero-detail.component';
-
-//import { AuthGuard } from './guards/index';
+import { AuthGuard } from './auth/auth.guard';
 
 import { SlidesComponent }   from './slides/slides.component';
 import { SlideDetailComponent }   from './slide-detail/slide-detail.component';
@@ -18,33 +14,58 @@ import { SlidePlayerComponent }   from './slideplayer/slideplayer.component';
 import { SlideshowPlayerComponent }   from './slideshowplayer/slideshowplayer.component';
 import { GalleryComponent }   from './gallery/gallery.component';
 import { LoginComponent }   from './login/login.component';
+import { ProfileComponent }   from './profile/profile.component';
 import { MusicPickerComponent }   from './musicpicker/musicpicker.component';
+import { AuthGuardService } from './services/authguard.service';
 
 const routes: Routes = [
-  //{ path: '', component: DashboardComponent, canActivate: [AuthGuard] },
-  //{ path: '', redirectTo: '/dashboard', pathMatch: 'full' },
-  { path: '', redirectTo: '/slideshowplayer/2', pathMatch: 'full' },
-  // { path: '**', redirectTo: '' },
-  { path: 'dashboard', component: DashboardComponent },
-  { path: 'detail/:id', component: HeroDetailComponent },
-  { path: 'heroes', component: HeroesComponent },
-  { path: 'slides', component: SlidesComponent },
-  { path: 'slidedetail/:slideId', component: SlideDetailComponent },
-  { path: 'soundtracks', component: SoundtracksComponent },
-  { path: 'soundtrackdetail/:id', component: SoundtrackDetailComponent },
-  { path: 'slideshows', component: SlideshowsComponent },
-  { path: 'slideshowdetail/:id', component: SlideshowDetailComponent },
-  { path: 'audioplayer/:id', component: AudioPlayerComponent },
-  { path: 'slideplayer/:id', component: SlidePlayerComponent },
-  { path: 'slideshowplayer/:id', component: SlideshowPlayerComponent },
-  { path: 'gallery', component: GalleryComponent },
+  // Public paths
+  { path: '', redirectTo: '/login', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
-  { path: 'musicpicker', component: MusicPickerComponent },
+
+  // Private paths
+  { path: 'slides', 
+    component: SlidesComponent,
+    canActivate: [AuthGuard] },
+  { path: 'slidedetail/:slideId', 
+    component: SlideDetailComponent,
+    canActivate: [AuthGuard] },
+  { path: 'soundtracks', 
+    component: SoundtracksComponent,
+    canActivate: [AuthGuard] },
+  { path: 'soundtrackdetail/:id', 
+    component: SoundtrackDetailComponent,
+    canActivate: [AuthGuard] },
+  { path: 'slideshows', 
+    component: SlideshowsComponent,
+    canActivate: [AuthGuard] },
+  { path: 'slideshowdetail/:id', 
+    component: SlideshowDetailComponent,
+    canActivate: [AuthGuard] },
+  { path: 'audioplayer/:id', 
+    component: AudioPlayerComponent,
+    canActivate: [AuthGuard] },
+  { path: 'slideplayer/:id', 
+    component: SlidePlayerComponent,
+    canActivate: [AuthGuard] },
+  { path: 'slideshowplayer/:id', 
+    component: SlideshowPlayerComponent,
+    canActivate: [AuthGuard] },
+  { path: 'gallery', 
+    component: GalleryComponent,
+    canActivate: [AuthGuard] },
+  { path: 'profile', 
+    component: ProfileComponent, 
+    canActivate: [AuthGuard] },
+  { path: 'musicpicker', 
+    component: MusicPickerComponent,
+    canActivate: [AuthGuard] }
 
 ];
 
 @NgModule({
   imports: [ RouterModule.forRoot(routes) ],
+  providers: [AuthGuard],
   exports: [ RouterModule ]
 })
 export class AppRoutingModule {}

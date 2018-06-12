@@ -6,23 +6,21 @@
     });
   </script>
 
-  <!-- <div class="text-center"> 
-    <h1>{{title}}</h1>
-  </div> -->
-
   <div class="align-items-start text-center p-3">
     <nav>
-        <a routerLink="/dashboard">Dashboard</a>
-        <a routerLink="/heroes">Heroes</a>
-        <a routerLink="/slides">Slides</a>
-        <a routerLink="/soundtracks">Soundtracks</a>
-        <a routerLink="/slideshows">Slideshows</a>
-        <a routerLink="/slideplayer/1">SlidePlayer</a>
-        <a routerLink="/audioplayer/1">AudioPlayer</a>
-        <a routerLink="/slideshowplayer/2">SlideshowPlayer</a>
-        <a routerLink="/gallery">Gallery</a>
-        <a routerLink="/login">Login</a>
-        <a routerLink="/musicpicker">Music Picker</a>
+        <a *ngIf="auth.isLoggedIn()" routerLinkActive="active" routerLink="/slides">Slides</a>
+        <a *ngIf="auth.isLoggedIn()" routerLinkActive="active" routerLink="/soundtracks">Soundtracks</a>
+        <a *ngIf="auth.isLoggedIn()" routerLinkActive="active" routerLink="/slideshows">Slideshows</a>
+        <a *ngIf="auth.isLoggedIn()" routerLinkActive="active" routerLink="/slideplayer/1">SlidePlayer</a>
+        <a *ngIf="auth.isLoggedIn()" routerLinkActive="active" routerLink="/audioplayer/1">AudioPlayer</a>
+        <a *ngIf="auth.isLoggedIn()" routerLinkActive="active" routerLink="/slideshowplayer/2">SlideshowPlayer</a>
+        <a *ngIf="auth.isLoggedIn()" routerLinkActive="active" routerLink="/gallery">Gallery</a>
+        <a *ngIf="auth.isLoggedIn()" routerLinkActive="active" routerLink="/musicpicker">Music Picker</a>
+        <a *ngIf="auth.isLoggedIn()" routerLinkActive="active" routerLink="/profile">{{ auth.Username }}</a>
+
+        <a *ngIf="!auth.isLoggedIn()" routerLink="/login">Login</a>
+        <a *ngIf="auth.isLoggedIn()" (click)="auth.logout()">Logout</a>
+       
     </nav>
   </div> 
 

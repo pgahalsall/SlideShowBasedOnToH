@@ -1,15 +1,5 @@
 <h2>My Slideshows</h2>
 
-<div>
-  <!-- <label>Hero name:
-    <input #heroName />
-  </label> -->
-  <!-- (click) passes input value to add() and then clears the input -->
-  <!-- <button (click)="add(heroName.value); heroName.value=''">
-    add
-  </button> -->
-</div>
-
 <ul class="slideshows">
   <li *ngFor="let slideshow of slideshows">
     <a routerLink="/slideshowdetail/{{slideshow.id}}">

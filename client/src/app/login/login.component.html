@@ -6,24 +6,42 @@
           <div class="col-md-4 login-sec">
               <h2 class="text-center">Login Now</h2>
 
-              <form class="login-form">
+              <form [formGroup]="form" class="login-form">
                   <div class="form-group">
-                    <label for="exampleInputEmail1" class="text-uppercase">Username</label>
-                    <input type="text" class="form-control" placeholder="">
+                    <label for="lbUsername" class="text-uppercase">Username</label>
+                    <input formControlName="username" type="text" class="form-control" placeholder="">
                   </div>
                   <div class="form-group">
-                    <label for="exampleInputPassword1" class="text-uppercase">Password</label>
-                    <input type="password" class="form-control" placeholder="">
+                    <label for="lbPassword" class="text-uppercase">Password</label>
+                    <input formControlName="password" type="password" class="form-control" placeholder="">
                   </div>
                 
                   <div class="form-check">
                     <label class="form-check-label">
-                      <input type="checkbox" class="form-check-input">
+                      <input formControlName="remember" type="checkbox" class="form-check-input">
                       <small>Remember Me</small>
                     </label>
                     <!-- <button type="submit" class="btn btn-login float-right">Submit</button> -->
-                    <button class="btn btn-login float-right" (click)="login()">Login</button>
+                    <button class="btn btn-login float-right" (click)="login()">Login Local</button>
                   </div>
+
+                  <!-- <div>
+                    <button class="btn fa fa-google-plus" (click)="loginWithGoogle()">Google</button>
+                  </div>   -->
+                  <!-- <div>
+                    <a href="http://localhost:3000/api/auth/google">Google Login                  
+                    </a>
+                  </div>     -->
+                  <!-- <div>
+                    Login with Google
+                    <ul>
+                      <li>
+                        <a href="/auth/google" class="googleplus">
+                          <i class="fa fa-google-plus"></i>
+                        </a>
+                      </li>
+                    </ul>
+                  </div> -->
                 
                 </form>
 
@@ -43,37 +61,34 @@
                   <div class="banner-text">
                       <h2>This is Heaven</h2>
                       <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation</p>
-                </div>	
+                  </div>	
+                </div>
               </div>
+              <div class="carousel-item">
+                <img class="d-block img-fluid" src="./assets/images/prototype/slides/swans.jpg" alt="First slide">
+                <div class="carousel-caption d-none d-md-block">
+                  <div class="banner-text-dark">
+                      <h2>This is Heaven</h2>
+                      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation</p>
+                  </div>	
+                </div>
+              </div>
+
+              <div class="carousel-item">
+                <img class="d-block img-fluid" src="./assets/images/prototype/slides/palm.jpg" alt="First slide">
+                <div class="carousel-caption d-none d-md-block">
+                  <div class="banner-text">
+                      <h2>This is Heaven</h2>
+                      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation</p>
+                  </div>	
+                </div>
             </div>
-            <div class="carousel-item">
-              <img class="d-block img-fluid" src="./assets/images/prototype/slides/swans.jpg" alt="First slide">
-              <div class="carousel-caption d-none d-md-block">
-                <div class="banner-text-dark">
-                    <h2>This is Heaven</h2>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation</p>
-                </div>	
-            </div>
+          </div>	   
+        </div>
       </div>
 
-      <div class="carousel-item">
-        <img class="d-block img-fluid" src="./assets/images/prototype/slides/palm.jpg" alt="First slide">
-        <div class="carousel-caption d-none d-md-block">
-          <div class="banner-text">
-              <h2>This is Heaven</h2>
-              <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation</p>
-        </div>	
-      </div>
-
-
-
-        </div>
-                  </div>	   
-              
-          </div>
-        </div>
-     </div>
-     </div>
-    </section>
+    </div>
+  </div>
+</section>
     
 
